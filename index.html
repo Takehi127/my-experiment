@@ -3,180 +3,611 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>心理学実験室</title>
-    <!-- Tailwind CSS CDN for modern and rapid styling -->
+    <title>心理学実験室 - 瞬間視覚記憶テスト</title>
+    <!-- Tailwind CSS for Modern UI -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Elegant typography suited for research and academic vibes -->
+    <!-- Google Fonts for Academic & Science Aesthetics -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'Noto Sans JP', 'sans-serif'],
-                    },
-                },
-            },
-        }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
     
     <style>
-        /* Smooth fade-in for the main laboratory card */
-        .fade-in {
-            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        /* Base styles */
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f8fafc; /* 薄いグレー */
+            background-image: 
+                linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+            background-size: 20px 20px;
         }
-        /* Scale-up animation for the custom alert modal */
-        .scale-up {
-            animation: scaleUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+
+        /* 最初の状態：コトコト揺れるアニメーション */
+        .lab-boil-animation {
+            animation: labBoil 2.5s ease-in-out infinite;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(16px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes labBoil {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(1.5deg); }
         }
-        @keyframes scaleUp {
-            from { opacity: 0; transform: scale(0.92); }
-            to { opacity: 1; transform: scale(1); }
+
+        /* 泡が下からポコポコ立ち上るアニメーション */
+        .bubble-rise {
+            animation: bubbleRise 2s infinite ease-in;
+        }
+        @keyframes bubbleRise {
+            0% { transform: translateY(10px) scale(0.6); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-60px) scale(1.2); opacity: 0; }
+        }
+
+        /* クリック後：ピタッと揺れが止まって、こちら側に「ぶわっ」と近づきフェードアウト */
+        .zoom-in-transition {
+            transition: transform 1.2s cubic-bezier(0.7, 0, 0.3, 1), opacity 1s ease-out;
+            transform: scale(25) !important;
+            opacity: 0 !important;
+            pointer-events: none;
+        }
+
+        /* 記憶テスト画面用の浮遊（フローティング）アイテムの基本アニメーション */
+        .float-slow-1 {
+            animation: floatSlow1 12s ease-in-out infinite;
+        }
+        .float-slow-2 {
+            animation: floatSlow2 15s ease-in-out infinite;
+        }
+        .float-slow-3 {
+            animation: floatSlow3 18s ease-in-out infinite;
+        }
+
+        @keyframes floatSlow1 {
+            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+            50% { transform: translateY(-25px) translateX(15px) rotate(10deg) scale(1.05); }
+        }
+        @keyframes floatSlow2 {
+            0%, 100% { transform: translateY(0) rotate(0deg) scale(1.05); }
+            50% { transform: translateY(20px) translateX(-20px) rotate(-15deg) scale(0.95); }
+        }
+        @keyframes floatSlow3 {
+            0%, 100% { transform: translateY(0) rotate(0deg) scale(0.9); }
+            50% { transform: translateY(-15px) translateX(-10px) rotate(8deg) scale(1.1); }
+        }
+
+        /* タップ用ゲームタイルの共通挙動 */
+        .game-tile {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.25rem;
+            font-weight: 900;
+            background-color: #ffffff;
+            border: 3px solid #e2e8f0;
+            border-radius: 1.25rem;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        .game-tile:active:not(.hidden-tile) {
+            transform: scale(0.95);
+        }
+        .game-tile.hidden-tile {
+            background-color: #3b82f6; /* 青い裏面 */
+            border-color: #2563eb;
+            color: #3b82f6 !important; /* 文字を同色にして完全に隠す */
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+        }
+        .game-tile.correct-tile {
+            background-color: #10b981; /* 成功時の緑 */
+            border-color: #059669;
+            color: #ffffff !important;
+            cursor: default;
+            transform: scale(0.95);
+        }
+        .game-tile.wrong-tile {
+            background-color: #ef4444; /* ミス時の赤 */
+            border-color: #dc2626;
+            color: #ffffff !important;
+            cursor: default;
+            animation: shake 0.2s ease-in-out 2;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        /* 物理的な紙吹雪のスタイル */
+        .particle {
+            position: fixed;
+            width: 12px;
+            height: 12px;
+            pointer-events: none;
+            z-index: 100;
+            animation: fall 3.5s linear forwards;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
         }
     </style>
 </head>
-<body class="bg-gray-50 font-sans min-h-screen flex flex-col justify-between text-gray-800">
+<body class="min-h-screen flex flex-col justify-between overflow-hidden relative select-none">
 
-    <!-- Header decoration for academic feel -->
-    <header class="p-6 w-full max-w-7xl mx-auto flex justify-between items-center">
-        <div class="flex items-center space-x-2 text-blue-600 font-bold text-lg tracking-wider select-none">
-            <span>🔬</span>
-            <span>PSYCHOLOGY LAB</span>
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 py-4 px-6 relative z-30">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl">🧪</span>
+                <span class="font-extrabold text-sm tracking-wider text-slate-500 font-mono">COGNITIVE_LAB.v3</span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span class="h-2.5 w-2.5 rounded-full bg-blue-500 animate-pulse"></span>
+                <span class="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest" id="status-tag">SYSTEM_STANDBY</span>
+            </div>
         </div>
-        <span class="text-xs text-gray-400 font-medium">System Active</span>
     </header>
 
-    <!-- Main content area, perfectly centered vertically and horizontally -->
-    <main class="flex-grow flex items-center justify-center px-4 py-12">
-        <div class="max-w-xl w-full text-center bg-white p-8 md:p-12 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-gray-100 fade-in">
-            <!-- Decorative icon to guide users -->
-            <div class="mb-6 inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 text-3xl">
-                🧠
-            </div>
+    <!-- ========== Main Area (Landing Page) ========== -->
+    <main id="screen-landing" class="flex-grow flex flex-col items-center justify-center px-4 py-8 relative z-20 transition-all duration-1000">
+        <div class="max-w-lg w-full text-center space-y-12">
             
-            <!-- Main Title requested by the user -->
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight leading-normal mb-4">
-                心理学実験室へようこそ
-            </h1>
-            
-            <!-- Explanatory subtext -->
-            <p class="text-sm md:text-base text-gray-400 leading-relaxed mb-10 max-w-sm mx-auto">
-                ボタンをクリックして実験セッションを開始し、応答速度・認知プロセスの評価を行ってください。
-            </p>
+            <!-- 揺れる試験管グラフィック容器 -->
+            <div class="w-full flex justify-center py-2">
+                <!-- 親コンテナ：JSで揺れを制御 -->
+                <div id="science-vessel" class="relative lab-boil-animation flex items-end justify-center gap-6 transition-transform duration-1000 ease-in">
+                    
+                    <!-- 左側の丸底フラスコ (青の液体) -->
+                    <div class="relative w-24 h-28">
+                        <svg class="w-full h-full drop-shadow-md" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M42 30V15H58V30L85 105C88 112 83 118 75 118H25C17 118 12 112 15 105L42 30Z" stroke="#475569" stroke-width="5" stroke-linejoin="round" fill="white"/>
+                            <path d="M22.5 100L35 65H65L77.5 100C81 108 75 114 68 114H32C25 114 19 108 22.5 100Z" fill="#3b82f6" fill-opacity="0.8"/>
+                            <line x1="38" y1="80" x2="48" y2="80" stroke="#94a3b8" stroke-width="2"/>
+                            <line x1="41" y1="95" x2="51" y2="95" stroke="#94a3b8" stroke-width="2"/>
+                        </svg>
+                        <!-- 沸き立つ泡 -->
+                        <div class="absolute inset-0 pointer-events-none overflow-hidden" style="clip-path: polygon(25% 55%, 75% 55%, 85% 100%, 15% 100%);">
+                            <div class="bubble-rise absolute bg-white/70 rounded-full w-2.5 h-2.5 left-1/3 bottom-4" style="animation-delay: 0s;"></div>
+                            <div class="bubble-rise absolute bg-white/70 rounded-full w-2 h-2 left-1/2 bottom-2" style="animation-delay: 0.7s;"></div>
+                            <div class="bubble-rise absolute bg-white/70 rounded-full w-3 h-3 left-2/3 bottom-6" style="animation-delay: 1.4s;"></div>
+                        </div>
+                    </div>
 
-            <!-- Playful blue start button requested by the user -->
-            <button 
-                id="start-btn"
-                class="w-full sm:w-auto px-10 py-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold rounded-2xl shadow-lg shadow-blue-500/10 hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-200 transform active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-base"
-            >
-                実験を開始する
-            </button>
+                    <!-- 右側の試験管 (緑の液体) -->
+                    <div class="relative w-14 h-28 mt-4">
+                        <svg class="w-full h-full drop-shadow-md" viewBox="0 0 60 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15 10V100C15 108.3 21.7 115 30 115C38.3 115 45 108.3 45 100V10" stroke="#475569" stroke-width="5" stroke-linecap="round"/>
+                            <path d="M17.5 50V100C17.5 106.9 23.1 112.5 30 112.5C36.9 112.5 42.5 106.9 42.5 100V50H17.5Z" fill="#10b981" fill-opacity="0.85"/>
+                            <rect x="10" y="5" width="40" height="5" rx="2.5" stroke="#475569" stroke-width="4"/>
+                        </svg>
+                        <!-- 沸き立つ泡 -->
+                        <div class="absolute inset-0 pointer-events-none overflow-hidden" style="clip-path: polygon(28% 40%, 72% 40%, 72% 95%, 28% 95%);">
+                            <div class="bubble-rise absolute bg-white/80 rounded-full w-2 h-2 left-2/5 bottom-3" style="animation-delay: 0.3s;"></div>
+                            <div class="bubble-rise absolute bg-white/80 rounded-full w-1.5 h-1.5 left-3/5 bottom-5" style="animation-delay: 1.1s;"></div>
+                        </div>
+                    </div>
+
+                    <div class="absolute -top-3 left-14 text-yellow-400 text-lg animate-pulse">✨</div>
+                    <div class="absolute -top-6 right-16 text-blue-400 text-base animate-bounce">🫧</div>
+                </div>
+            </div>
+
+            <!-- タイトルと解説 -->
+            <div class="space-y-4">
+                <h1 class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+                    心理学実験室へようこそ
+                </h1>
+                <p class="text-slate-500 text-base max-w-sm mx-auto leading-relaxed">
+                    目の前に一瞬だけ出現する「数字」の正しい場所を記憶し、隠された後に1から順番に昇順でタップしていく、短期瞬間記憶タスクです。
+                </p>
+            </div>
+
+            <!-- 開始青いボタン -->
+            <div class="pt-2">
+                <button 
+                    id="btn-start"
+                    onclick="triggerImmersiveTransition()" 
+                    class="group relative w-full sm:w-64 py-4 px-8 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-2xl text-lg shadow-[0_10px_25px_rgba(37,99,235,0.25)] hover:shadow-[0_15px_30px_rgba(37,99,235,0.4)] hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 block mx-auto overflow-hidden"
+                >
+                    <span class="absolute right-0 top-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-20 rotate-12 group-hover:-translate-x-40"></span>
+                    <span class="relative">実験を開始する</span>
+                </button>
+            </div>
+
         </div>
     </main>
 
-    <!-- Simple academic copyright footer -->
-    <footer class="p-6 text-center text-xs text-gray-400">
-        &copy; 2026 Department of Cognitive Science. All rights reserved.
-    </footer>
+    <!-- ========== Game Page (Active Laboratory Environment) ========== -->
+    <div id="screen-game" class="hidden flex-grow flex flex-col justify-center items-center px-4 py-8 relative">
+        
+        <!-- ふわふわ浮遊する試験管、フラスコ、サイエンス要素が散りばめられる背景レイヤー（問題枠の外側） -->
+        <div id="floating-lab-environment" class="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
+            <!-- JavaScriptにより、問題の周りにたくさんの試験管などが動的に生成されます -->
+        </div>
 
-    <!-- Premium custom alert overlay (initially hidden) -->
-    <div 
-        id="alert-overlay" 
-        class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-50 flex items-center justify-center px-4 opacity-0 pointer-events-none transition-opacity duration-300"
-    >
-        <!-- Custom alert card -->
-        <div 
-            id="alert-card"
-            class="bg-white rounded-2xl p-6 md:p-8 max-w-sm w-full shadow-2xl border border-gray-100 text-center"
-        >
-            <!-- Checkmark / Info visual icon inside dialog -->
-            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-50 text-blue-600 mb-4">
-                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+        <!-- 記憶テストの本体ブロック -->
+        <div class="max-w-md w-full bg-white/95 backdrop-blur-md rounded-3xl p-6 border border-slate-200 shadow-xl relative z-10 text-center space-y-6">
+            
+            <!-- 上部ステータス -->
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <span class="text-xs text-blue-600 font-mono font-bold tracking-wider">COGNITIVE_TASK_03</span>
+                <span class="bg-blue-50 text-blue-700 border border-blue-100 px-3 py-1 rounded-full text-xs font-mono font-bold" id="level-display">
+                    LV 1 : 記憶個数 3つ
+                </span>
             </div>
-            
-            <!-- Alert Title -->
-            <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-1">アラート通知</h3>
-            
-            <!-- Hello World! content requested by the user -->
-            <p class="text-2xl font-mono font-bold text-gray-900 tracking-tight my-4">
-                Hello World!
-            </p>
-            
-            <p class="text-xs text-gray-400 mb-6">
-                システムの疎通確認とインターフェースの展開に成功しました。
+
+            <!-- ガイドメッセージ -->
+            <p id="game-instruction" class="text-sm font-extrabold text-slate-700 py-2 px-4 bg-slate-50 border border-slate-100 rounded-xl inline-block">
+                数字の配置を記憶してください...
             </p>
 
-            <!-- Close Action button -->
-            <button 
-                id="alert-close-btn"
-                class="w-full px-5 py-3 bg-gray-900 hover:bg-gray-800 active:bg-black text-white font-medium rounded-xl transition-colors duration-200 text-sm focus:outline-none"
-            >
-                閉じる
+            <!-- 3x3のゲームグリッド（問題） -->
+            <div class="flex justify-center">
+                <div id="game-grid" class="grid grid-cols-3 gap-3 w-72 h-72 p-2.5 bg-slate-100/70 rounded-2xl border border-slate-200/50 shadow-inner">
+                    <!-- JSにて動的生成 -->
+                </div>
+            </div>
+
+            <!-- キャンセルボタン -->
+            <button onclick="abortGame()" class="text-slate-400 hover:text-slate-600 text-xs font-bold hover:underline transition-colors block mx-auto">
+                ← 実験を中止してトップに戻る
             </button>
         </div>
     </div>
 
+    <!-- ========== Results Screen (Official Custom Certificate Modal) ========== -->
+    <div id="screen-results" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        
+        <div class="bg-white rounded-3xl p-8 md:p-10 border-4 border-dashed border-emerald-400 shadow-[0_20px_50px_rgba(15,23,42,0.22)] max-w-md w-full text-center relative overflow-hidden transform scale-95 opacity-0 transition-all duration-500 ease-out" id="cert-card">
+            
+            <!-- 背景のサイエンスデコレーション -->
+            <div class="absolute -top-12 -right-12 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl"></div>
+            <div class="absolute -bottom-12 -left-12 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl"></div>
+
+            <!-- 認知科学研究所のロゴヘッダー -->
+            <div class="space-y-2 pb-5 border-b border-slate-100">
+                <span class="text-5xl inline-block animate-bounce">🎓</span>
+                <h2 class="text-[9px] font-mono font-black tracking-widest text-slate-400 uppercase">COGNITIVE RESEARCH LAB REPORT</h2>
+                <!-- Hello World! -->
+                <h1 class="text-4xl font-black text-slate-900 tracking-tight">Hello World!</h1>
+            </div>
+
+            <!-- 証明内容 -->
+            <div class="py-6 space-y-6">
+                <p class="text-xs text-slate-500 leading-relaxed max-w-xs mx-auto">
+                    認知科学実験室における瞬間的な位置感覚格納シーケンスが、以下の通り規定レベルに到達したことを証明します。
+                </p>
+
+                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-100 max-w-xs mx-auto">
+                    <span class="text-[9px] text-slate-400 block mb-0.5 font-mono font-bold tracking-wider">VISUAL_MEMORY_SCORE</span>
+                    <span class="text-lg font-black text-blue-600 font-mono">試験完全突破 (LV 5 クリア)</span>
+                </div>
+
+                <!-- 武田さんは無事この課題を提出できた！ (お祝いバウンド) -->
+                <div class="pt-2 max-w-xs mx-auto">
+                    <div class="border-2 border-emerald-400/30 rounded-2xl p-4 bg-emerald-50/70 shadow-sm relative overflow-hidden animate-bounce">
+                        <span class="absolute right-2 top-2 text-emerald-400 text-xs animate-pulse">✨</span>
+                        <p class="text-[9px] font-mono font-black text-emerald-600 uppercase tracking-widest mb-1">TASK_SUBMISSION_VERIFIED</p>
+                        <!-- 指定テキスト -->
+                        <p class="text-base font-black text-emerald-700 tracking-tight">
+                            武田は無事この課題を提出できた！
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- もう一度行うボタン -->
+            <div class="pt-4 border-t border-slate-100">
+                <button onclick="location.reload()" class="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-extrabold rounded-2xl text-sm shadow-md active:scale-95 transition-all">
+                    実験室の受付に戻る
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="p-6 text-center text-[10px] text-slate-400 border-t border-slate-200/40 bg-white/70 backdrop-blur-sm relative z-20 font-mono">
+        &copy; 2026 DEPARTMENT OF COGNITIVE SCIENCE. STATUS: OK
+    </footer>
+
     <script>
-        // DOM Element Selections
-        const startBtn = document.getElementById('start-btn');
-        const alertOverlay = document.getElementById('alert-overlay');
-        const alertCard = document.getElementById('alert-card');
-        const alertCloseBtn = document.getElementById('alert-close-btn');
+        // Game configuration states
+        const maxLevel = 5;
+        let gameConfig = {
+            level: 1,
+            numCount: 3, // Initial memory elements
+            board: [],
+            currentStep: 1,
+            displayTimer: null,
+            transitioning: false
+        };
 
-        /**
-         * Custom Alert Animation trigger: Shows the dialog smoothly
-         */
-        function showAlert() {
-            // Unhide overlay and trigger CSS fade
-            alertOverlay.classList.remove('opacity-0', 'pointer-events-none');
-            alertOverlay.classList.add('opacity-100', 'pointer-events-auto');
-            
-            // Trigger scale-up for internal card
-            alertCard.classList.remove('scale-95');
-            alertCard.classList.add('scale-100', 'scale-up');
+        // --- 1. 開始ボタン押下時の劇的なトランジション ---
+        function triggerImmersiveTransition() {
+            if (gameConfig.transitioning) return;
+            gameConfig.transitioning = true;
+
+            const vessel = document.getElementById('science-vessel');
+            const statusTag = document.getElementById('status-tag');
+            const landingScreen = document.getElementById('screen-landing');
+
+            // ① コトコト・ポコポコアニメーションをピタッと停止する
+            vessel.classList.remove('lab-boil-animation');
+            document.querySelectorAll('.bubble-rise').forEach(el => el.style.animation = 'none');
+
+            // ステータスを「移行中」へ更新
+            statusTag.className = "text-xs font-mono font-bold text-red-500 uppercase tracking-widest animate-pulse";
+            statusTag.innerText = "TRANSITIONING_LAB";
+
+            // ② こちら側にぶわっと近づいてくるトランジションクラスを適用
+            setTimeout(() => {
+                vessel.classList.add('zoom-in-transition');
+            }, 100);
+
+            // ③ 拡大完了後、ゲーム画面へシームレスに切り替える
+            setTimeout(() => {
+                landingScreen.classList.add('hidden');
+                document.getElementById('screen-game').classList.remove('hidden');
+                
+                // フローティング環境の設置とゲーム開始
+                setupFloatingEnvironment();
+                startGame();
+                gameConfig.transitioning = false;
+            }, 1100);
         }
 
-        /**
-         * Custom Alert Animation trigger: Hides the dialog smoothly
-         */
-        function hideAlert() {
-            // Hide overlay and reset events
-            alertOverlay.classList.add('opacity-0', 'pointer-events-none');
-            alertOverlay.classList.remove('opacity-100', 'pointer-events-auto');
-            
-            // Revert card scale to default state
-            alertCard.classList.remove('scale-100', 'scale-up');
-            alertCard.classList.add('scale-95');
+        // --- 2. 問題の周りでふわふわ浮遊する試験管などを動的生成 ---
+        function setupFloatingEnvironment() {
+            const container = document.getElementById('floating-lab-environment');
+            container.innerHTML = ''; // クリア
+
+            // 生成するサイエンス要素のラインナップ
+            const scienceElements = [
+                { symbol: '🧪', class: 'float-slow-1', size: 'text-3xl' },
+                { symbol: '⚗️', class: 'float-slow-2', size: 'text-4xl' },
+                { symbol: '🧬', class: 'float-slow-3', size: 'text-3xl' },
+                { symbol: '🔬', class: 'float-slow-1', size: 'text-4xl' },
+                { symbol: '🫧', class: 'float-slow-2', size: 'text-2xl' },
+                { symbol: '🧪', class: 'float-slow-3', size: 'text-2xl' },
+                { symbol: '🫧', class: 'float-slow-1', size: 'text-3xl' }
+            ];
+
+            // 画面の上下左右の余白に散りばめるための座標分布（グリッドに被らないよう端寄りに分散）
+            const coordinates = [
+                { top: '10%', left: '10%' },
+                { top: '15%', right: '12%' },
+                { top: '45%', left: '8%' },
+                { top: '50%', right: '10%' },
+                { top: '80%', left: '15%' },
+                { top: '78%', right: '12%' },
+                { top: '85%', left: '48%' } // 下部中央付近
+            ];
+
+            coordinates.forEach((coord, index) => {
+                const elementData = scienceElements[index % scienceElements.length];
+                const floatingDiv = document.createElement('div');
+                
+                // スタイルとアニメーションクラスの設定
+                floatingDiv.className = `absolute select-none pointer-events-none opacity-40 hover:opacity-70 transition-opacity ${elementData.size} ${elementData.class}`;
+                
+                // 位置情報
+                if (coord.top) floatingDiv.style.top = coord.top;
+                if (coord.bottom) floatingDiv.style.bottom = coord.bottom;
+                if (coord.left) floatingDiv.style.left = coord.left;
+                if (coord.right) floatingDiv.style.right = coord.right;
+
+                floatingDiv.textContent = elementData.symbol;
+                container.appendChild(floatingDiv);
+            });
         }
 
-        // Event Listener: Clicking "実験を開始する" shows the custom "Hello World!" alert
-        startBtn.addEventListener('click', showAlert);
+        // --- 3. 瞬間記憶（チンパンジー）ゲームループ ---
+        function startGame() {
+            gameConfig.level = 1;
+            gameConfig.numCount = 3;
+            startNewRound();
+        }
 
-        // Event Listener: Clicking "閉じる" inside the modal dismisses it
-        alertCloseBtn.addEventListener('click', hideAlert);
+        function startNewRound() {
+            const statusTag = document.getElementById('status-tag');
+            statusTag.className = "text-xs font-mono font-bold text-blue-500 uppercase tracking-widest animate-pulse";
+            statusTag.innerText = `LEVEL_${gameConfig.level}_ACTIVE`;
 
-        // Accessibility Event: Dismiss alert when user clicks outside the modal card
-        alertOverlay.addEventListener('click', (e) => {
-            if (e.target === alertOverlay) {
-                hideAlert();
+            document.getElementById('level-display').innerText = `LV ${gameConfig.level} : 記憶個数 ${gameConfig.numCount}つ`;
+            document.getElementById('game-instruction').innerText = "数字の配置を記憶してください...";
+            document.getElementById('game-instruction').className = "text-sm font-extrabold text-slate-700 py-2 px-4 bg-blue-50 border border-blue-200 rounded-xl inline-block";
+
+            const grid = document.getElementById('game-grid');
+            grid.innerHTML = '';
+
+            // 3x3 (計9箇所) のインデックスから、必要な数だけランダムな位置を選択
+            const indices = Array.from({ length: 9 }, (_, i) => i);
+            const shuffled = indices.sort(() => Math.random() - 0.5);
+            const targetPositions = shuffled.slice(0, gameConfig.numCount);
+
+            gameConfig.board = Array(9).fill(null);
+            targetPositions.forEach((pos, idx) => {
+                gameConfig.board[pos] = idx + 1; // 1から順に配列に格納
+            });
+
+            gameConfig.currentStep = 1;
+
+            // タイル生成
+            for (let i = 0; i < 9; i++) {
+                const numVal = gameConfig.board[i];
+                const tile = document.createElement('button');
+                tile.className = "game-tile";
+                tile.dataset.index = i;
+
+                if (numVal !== null) {
+                    tile.innerText = numVal;
+                    // 開始時は数字が見えている（記憶フェーズ）
+                    tile.classList.add('bg-blue-50/50', 'text-blue-600', 'border-blue-300');
+                } else {
+                    tile.innerText = "";
+                    tile.disabled = true;
+                }
+                grid.appendChild(tile);
             }
-        });
 
-        // Accessibility Event: Dismiss alert with ESC key for better keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !alertOverlay.classList.contains('opacity-0')) {
-                hideAlert();
+            // 記憶時間（レベルが上がると記憶時間が短くなる難化設計：初期1.4秒、後半1.1秒）
+            const memorizationDuration = Math.max(1000, 1500 - (gameConfig.level * 100));
+            
+            if (gameConfig.displayTimer) clearTimeout(gameConfig.displayTimer);
+            gameConfig.displayTimer = setTimeout(() => {
+                hideBoardNumbers();
+            }, memorizationDuration);
+        }
+
+        // 数字を裏返してタップフェーズへ
+        function hideBoardNumbers() {
+            document.getElementById('game-instruction').innerText = "1 から順番にタップしてください！";
+            document.getElementById('game-instruction').className = "text-sm font-extrabold text-blue-800 py-2 px-4 bg-blue-50 border border-blue-200 rounded-xl inline-block animate-bounce";
+
+            const tiles = document.querySelectorAll('.game-tile');
+            tiles.forEach(tile => {
+                const idx = parseInt(tile.dataset.index);
+                const numVal = gameConfig.board[idx];
+
+                if (numVal !== null) {
+                    tile.classList.remove('bg-blue-50/50', 'text-blue-600', 'border-blue-300');
+                    tile.classList.add('hidden-tile'); // 青い裏面化
+                    tile.onclick = () => handleTileTap(tile, numVal);
+                } else {
+                    tile.onclick = () => handleIncorrectTap(tile);
+                }
+            });
+        }
+
+        // 正しい順番でのタップ時
+        function handleTileTap(tile, value) {
+            if (value === gameConfig.currentStep) {
+                // 正解
+                tile.innerText = value;
+                tile.className = "game-tile correct-tile";
+                tile.onclick = null; // 重複タップ防止
+
+                gameConfig.currentStep++;
+
+                // すべての数字を正しくタップし終えた
+                if (gameConfig.currentStep > gameConfig.numCount) {
+                    flashFlashScreen('success');
+                    
+                    if (gameConfig.level >= maxLevel) {
+                        // 全クリ！結果修了証の表示へ
+                        setTimeout(() => {
+                            showAcademicCertificate();
+                        }, 600);
+                    } else {
+                        // 次のレベルへ
+                        gameConfig.level++;
+                        gameConfig.numCount++;
+                        setTimeout(() => {
+                            startNewRound();
+                        }, 1000);
+                    }
+                }
+            } else {
+                // 順番を間違えてタップした
+                handleIncorrectTap(tile);
             }
-        });
+        }
+
+        // 不正解のタップ時
+        function handleIncorrectTap(tile) {
+            flashFlashScreen('fail');
+            tile.className = "game-tile wrong-tile";
+
+            // 正解の数字をすべて開示
+            const tiles = document.querySelectorAll('.game-tile');
+            tiles.forEach(t => {
+                t.onclick = null;
+                const idx = parseInt(t.dataset.index);
+                const val = gameConfig.board[idx];
+                if (val !== null) {
+                    t.innerText = val;
+                    if (!t.classList.contains('correct-tile') && t !== tile) {
+                        t.className = "game-tile bg-slate-300 border-slate-400 text-slate-800";
+                    }
+                }
+            });
+
+            document.getElementById('game-instruction').innerText = "不正解！リブートします...";
+            document.getElementById('game-instruction').className = "text-sm font-extrabold text-red-600 py-2 px-4 bg-red-50 border border-red-200 rounded-xl inline-block";
+
+            // 1.8秒後に最初に戻る
+            setTimeout(() => {
+                location.reload();
+            }, 1800);
+        }
+
+        // 中断処理
+        function abortGame() {
+            if (gameConfig.displayTimer) clearTimeout(gameConfig.displayTimer);
+            location.reload();
+        }
+
+        // 正解/不正解時の瞬間スクリーン光フラッシュ
+        function flashFlashScreen(type) {
+            const body = document.body;
+            if (type === 'success') {
+                body.classList.add('bg-emerald-100');
+                setTimeout(() => body.classList.remove('bg-emerald-100'), 150);
+            } else {
+                body.classList.add('bg-red-100');
+                setTimeout(() => body.classList.remove('bg-red-100'), 150);
+            }
+        }
+
+        // --- 4. 課題提出お祝い（修了証）のモーダル表示 & 紙吹雪 ---
+        function showAcademicCertificate() {
+            const statusTag = document.getElementById('status-tag');
+            statusTag.className = "text-xs font-mono font-bold text-emerald-500 uppercase tracking-widest";
+            statusTag.innerText = "EXP_3_COMPLETED";
+
+            const modal = document.getElementById('screen-results');
+            const card = document.getElementById('cert-card');
+
+            modal.classList.remove('hidden');
+            
+            // スムーズなフェードイン/スケールアップ
+            setTimeout(() => {
+                card.classList.remove('scale-95', 'opacity-0');
+                card.classList.add('scale-100', 'opacity-100');
+            }, 50);
+
+            spawnConfettiParticles();
+        }
+
+        // 紙吹雪をダイナミックに散布する物理エフェクト
+        function spawnConfettiParticles() {
+            const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#ef4444'];
+            const count = 100;
+
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // ランダムな色と配置
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.top = '-20px';
+                
+                // バラバラな速度や揺れ具合の設定
+                particle.style.animationDelay = Math.random() * 2.5 + 's';
+                particle.style.transform = `scale(${0.5 + Math.random() * 0.8})`;
+
+                document.body.appendChild(particle);
+
+                // アニメーション終了後に不要なDOMを自動クリーンアップ
+                particle.addEventListener('animationend', () => {
+                    particle.remove();
+                });
+            }
+        }
     </script>
 </body>
 </html>
