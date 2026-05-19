@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心理学実験室</title>
+    <!-- Tailwind CSS CDN for modern and rapid styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Elegant typography suited for research and academic vibes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans JP', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    
+    <style>
+        /* Smooth fade-in for the main laboratory card */
+        .fade-in {
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        /* Scale-up animation for the custom alert modal */
+        .scale-up {
+            animation: scaleUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scaleUp {
+            from { opacity: 0; transform: scale(0.92); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans min-h-screen flex flex-col justify-between text-gray-800">
+
+    <!-- Header decoration for academic feel -->
+    <header class="p-6 w-full max-w-7xl mx-auto flex justify-between items-center">
+        <div class="flex items-center space-x-2 text-blue-600 font-bold text-lg tracking-wider select-none">
+            <span>🔬</span>
+            <span>PSYCHOLOGY LAB</span>
+        </div>
+        <span class="text-xs text-gray-400 font-medium">System Active</span>
+    </header>
+
+    <!-- Main content area, perfectly centered vertically and horizontally -->
+    <main class="flex-grow flex items-center justify-center px-4 py-12">
+        <div class="max-w-xl w-full text-center bg-white p-8 md:p-12 rounded-3xl shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-gray-100 fade-in">
+            <!-- Decorative icon to guide users -->
+            <div class="mb-6 inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 text-3xl">
+                🧠
+            </div>
+            
+            <!-- Main Title requested by the user -->
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight leading-normal mb-4">
+                心理学実験室へようこそ
+            </h1>
+            
+            <!-- Explanatory subtext -->
+            <p class="text-sm md:text-base text-gray-400 leading-relaxed mb-10 max-w-sm mx-auto">
+                ボタンをクリックして実験セッションを開始し、応答速度・認知プロセスの評価を行ってください。
+            </p>
+
+            <!-- Playful blue start button requested by the user -->
+            <button 
+                id="start-btn"
+                class="w-full sm:w-auto px-10 py-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold rounded-2xl shadow-lg shadow-blue-500/10 hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-200 transform active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-base"
+            >
+                実験を開始する
+            </button>
+        </div>
+    </main>
+
+    <!-- Simple academic copyright footer -->
+    <footer class="p-6 text-center text-xs text-gray-400">
+        &copy; 2026 Department of Cognitive Science. All rights reserved.
+    </footer>
+
+    <!-- Premium custom alert overlay (initially hidden) -->
+    <div 
+        id="alert-overlay" 
+        class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-50 flex items-center justify-center px-4 opacity-0 pointer-events-none transition-opacity duration-300"
+    >
+        <!-- Custom alert card -->
+        <div 
+            id="alert-card"
+            class="bg-white rounded-2xl p-6 md:p-8 max-w-sm w-full shadow-2xl border border-gray-100 text-center"
+        >
+            <!-- Checkmark / Info visual icon inside dialog -->
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-50 text-blue-600 mb-4">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            
+            <!-- Alert Title -->
+            <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-1">アラート通知</h3>
+            
+            <!-- Hello World! content requested by the user -->
+            <p class="text-2xl font-mono font-bold text-gray-900 tracking-tight my-4">
+                Hello World!
+            </p>
+            
+            <p class="text-xs text-gray-400 mb-6">
+                システムの疎通確認とインターフェースの展開に成功しました。
+            </p>
+
+            <!-- Close Action button -->
+            <button 
+                id="alert-close-btn"
+                class="w-full px-5 py-3 bg-gray-900 hover:bg-gray-800 active:bg-black text-white font-medium rounded-xl transition-colors duration-200 text-sm focus:outline-none"
+            >
+                閉じる
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // DOM Element Selections
+        const startBtn = document.getElementById('start-btn');
+        const alertOverlay = document.getElementById('alert-overlay');
+        const alertCard = document.getElementById('alert-card');
+        const alertCloseBtn = document.getElementById('alert-close-btn');
+
+        /**
+         * Custom Alert Animation trigger: Shows the dialog smoothly
+         */
+        function showAlert() {
+            // Unhide overlay and trigger CSS fade
+            alertOverlay.classList.remove('opacity-0', 'pointer-events-none');
+            alertOverlay.classList.add('opacity-100', 'pointer-events-auto');
+            
+            // Trigger scale-up for internal card
+            alertCard.classList.remove('scale-95');
+            alertCard.classList.add('scale-100', 'scale-up');
+        }
+
+        /**
+         * Custom Alert Animation trigger: Hides the dialog smoothly
+         */
+        function hideAlert() {
+            // Hide overlay and reset events
+            alertOverlay.classList.add('opacity-0', 'pointer-events-none');
+            alertOverlay.classList.remove('opacity-100', 'pointer-events-auto');
+            
+            // Revert card scale to default state
+            alertCard.classList.remove('scale-100', 'scale-up');
+            alertCard.classList.add('scale-95');
+        }
+
+        // Event Listener: Clicking "実験を開始する" shows the custom "Hello World!" alert
+        startBtn.addEventListener('click', showAlert);
+
+        // Event Listener: Clicking "閉じる" inside the modal dismisses it
+        alertCloseBtn.addEventListener('click', hideAlert);
+
+        // Accessibility Event: Dismiss alert when user clicks outside the modal card
+        alertOverlay.addEventListener('click', (e) => {
+            if (e.target === alertOverlay) {
+                hideAlert();
+            }
+        });
+
+        // Accessibility Event: Dismiss alert with ESC key for better keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !alertOverlay.classList.contains('opacity-0')) {
+                hideAlert();
+            }
+        });
+    </script>
+</body>
+</html>
