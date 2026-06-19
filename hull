@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Frutiger Aero Interactive Experience</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tone.js for high-quality synthetic sound generation without external asset URLs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <!-- Font-Awesome for vector icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Noto+Sans+JP:wght@100;300;500;700&display=swap');
+
+    :root {
+      --aero-blue: rgba(14, 165, 233, 0.45);
+      --aero-green: rgba(34, 197, 94, 0.45);
+    }
+
+    body {
+      font-family: 'Comfortaa', 'Noto Sans JP', sans-serif;
+      overflow: hidden;
+      user-select: none;
+      background: linear-gradient(135deg, #022c22 0%, #0369a1 40%, #0e7490 70%, #15803d 100%);
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* Aero Glass Styling - The core visual hallmark of Frutiger Aero */
+    .aero-glass {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 
+        0 8px 32px 0 rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8),
+        inset 0 -10px 20px rgba(255, 255, 255, 0.1);
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+    }
+
+    /* Highlight glossy overlay */
+    .glossy-reflection {
+      position: relative;
+      overflow: hidden;
+    }
+    .glossy-reflection::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Frutiger Aero Aurora Waves */
+    .aurora-bg {
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      top: -50%;
+      left: -50%;
+      background: 
+        radial-gradient(circle at 30% 20%, rgba(56, 189, 248, 0.4) 0%, transparent 40%),
+        radial-gradient(circle at 80% 40%, rgba(74, 222, 128, 0.35) 0%, transparent 45%),
+        radial-gradient(circle at 40% 80%, rgba(14, 165, 233, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 90% 10%, rgba(16, 185, 129, 0.25) 0%, transparent 35%);
+      filter: blur(80px);
+      animation: auroraRotate 40s linear infinite;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    @keyframes auroraRotate {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.15); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    /* Vector Streamlines for Frutiger Aero flow */
+    .streamline {
+      position: absolute;
+      border-radius: 50%;
+      border-top: 4px solid rgba(255, 255, 255, 0.15);
+      border-left: 2px solid rgba(255, 255, 255, 0.05);
+      filter: blur(2px);
+      pointer-events: none;
+      transform: rotate(-15deg);
+      animation: waveFlow 25s ease-in-out infinite;
+    }
+
+    @keyframes waveFlow {
+      0%, 100% { transform: translateY(0) rotate(-15deg) scaleY(1); }
+      50% { transform: translateY(-30px) rotate(-10deg) scaleY(1.1); }
+    }
+
+    /* Wet glossy water drop on desktop */
+    .water-droplet {
+      position: absolute;
+      background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.15) 50%, rgba(0, 0, 0, 0.1) 80%, rgba(0, 0, 0, 0.25) 100%);
+      box-shadow: 
+        inset -2px -2px 6px rgba(0, 0, 0, 0.3),
+        inset 2px 2px 6px rgba(255, 255, 255, 0.8),
+        2px 6px 12px rgba(0, 0, 0, 0.15);
+      border-radius: 50% 50% 55% 45% / 55% 55% 45% 45%;
+      pointer-events: auto;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+    .water-droplet:hover {
+      transform: scale(1.08);
+    }
+    .water-droplet:active {
+      transform: scale(0.9);
+    }
+
+    /* Lucid Dream Floating Bubble Styles */
+    .escape-bubble {
+      position: absolute;
+      bottom: -60px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.1) 60%, rgba(14, 165, 233, 0.25) 80%, rgba(255, 255, 255, 0) 100%);
+      box-shadow: 
+        inset 0 0 10px rgba(255, 255, 255, 0.6),
+        0 4px 12px rgba(14, 165, 233, 0.1);
+      border: 0.5px solid rgba(255, 255, 255, 0.35);
+      pointer-events: none;
+      animation: floatUpAndAway 9s linear forwards;
+    }
+
+    @keyframes floatUpAndAway {
+      0% {
+        transform: translateY(0) translateX(0) scale(1);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.75;
+      }
+      90% {
+        opacity: 0.75;
+      }
+      100% {
+        transform: translateY(-115vh) translateX(var(--wobble-x)) scale(1.1);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body class="relative flex flex-col justify-between select-none w-screen h-screen">
+
+  <!-- Ambient Aurora and Water flow overlays -->
+  <div class="aurora-bg"></div>
+  
+  <!-- Curved organic lines representing 2000s vector line-art -->
+  <div class="streamline w-[140vw] h-[60vh] -top-10 -left-20 opacity-30"></div>
+  <div class="streamline w-[120vw] h-[50vh] top-1/3 -left-10 opacity-20" style="animation-delay: -5s; animation-duration: 35s;"></div>
+  <div class="streamline w-[150vw] h-[40vh] -bottom-20 -left-10 opacity-40" style="animation-delay: -12s; animation-duration: 18s;"></div>
+
+  <!-- Main Water Ripple Effect Canvas (Shared across screens) -->
+  <canvas id="rippleCanvas" class="absolute inset-0 w-full h-full z-1 pointer-events-none"></canvas>
+
+  <!-- ==================== HOME SCREEN ==================== -->
+  <div id="homeScreen" class="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 transition-all duration-1000">
+    <div class="aero-glass rounded-3xl p-8 max-w-lg w-full text-center glossy-reflection flex flex-col items-center gap-6 border-2 border-white/70 shadow-2xl">
+      <!-- Glossy Orb logo in center -->
+      <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-sky-500 via-emerald-400 to-white flex items-center justify-center shadow-xl border-2 border-white relative overflow-hidden group">
+        <div class="absolute inset-0 bg-gradient-to-b from-white/70 to-transparent h-[45%] rounded-b-full"></div>
+        <i class="fa-solid fa-leaf text-white text-3xl drop-shadow-md animate-pulse"></i>
+      </div>
+      <div>
+        <h1 class="text-white text-2xl font-bold tracking-widest drop-shadow-sm uppercase">Aero Dreamspace</h1>
+        <p class="text-xs text-sky-100 mt-2 tracking-wide">持続可能な未来と、穏やかな夢のインターフェース</p>
+      </div>
+
+      <p class="text-xs text-slate-100 leading-relaxed max-w-sm px-2 opacity-90">
+        ガラスの艶、水の清らかさ、および輝く新緑。優しく満ち溢れる2000年代中頃の楽観主義へ、もう一度アクセスしましょう。
+      </p>
+
+      <!-- Glassy Start Button with ripple triggers -->
+      <button onclick="enterDream()" class="w-full py-4 bg-gradient-to-r from-emerald-400/50 to-sky-400/50 hover:from-emerald-400/70 hover:to-sky-400/70 active:scale-95 border-2 border-white/80 rounded-2xl text-white font-bold tracking-widest text-sm transition-all shadow-lg glossy-reflection">
+        <i class="fa-solid fa-eye mr-2"></i> 夢を見る
+      </button>
+    </div>
+  </div>
+
+
+  <!-- ==================== STREAMING_CHUNK:Rendering main workspace simulator interface... ==================== -->
+  <!-- ==================== GAME/SIMULATOR SCREEN ==================== -->
+  <div id="gameScreen" class="absolute inset-0 z-10 flex flex-col justify-between transition-all duration-1000 translate-y-10 opacity-0 pointer-events-none pb-6">
+    
+    <!-- Top Aero Navigation Header Bar -->
+    <header class="w-full h-16 px-6 flex items-center justify-between aero-glass glossy-reflection z-10">
+      <div class="flex items-center gap-3">
+        <!-- Glossy Orb Logo resembling Windows Vista style Orb -->
+        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-sky-500 via-emerald-400 to-white flex items-center justify-center shadow-lg border border-white/60 relative overflow-hidden group cursor-pointer" onclick="playAeroChime()">
+          <div class="absolute inset-0 bg-gradient-to-b from-white/60 to-transparent h-[45%] rounded-b-full"></div>
+          <i class="fa-solid fa-leaf text-white text-base drop-shadow-md group-hover:rotate-12 transition-transform duration-300"></i>
+        </div>
+        <div>
+          <h1 class="text-white font-bold text-sm tracking-widest drop-shadow-sm">AERO ECO-SYSTEM</h1>
+          <p class="text-[10px] text-sky-100 opacity-95">Frutiger Aero Desktop v1.3</p>
+        </div>
+      </div>
+
+      <!-- Active Environmental Status Indicators -->
+      <div class="hidden md:flex items-center gap-6">
+        <div class="flex items-center gap-2 bg-white/20 px-3 py-1.5 rounded-full border border-white/40 text-xs text-white">
+          <i class="fa-solid fa-wind text-sky-200 animate-pulse"></i>
+          <span>空気清浄: <strong class="font-bold">98%</strong></span>
+        </div>
+        <div class="flex items-center gap-2 bg-white/20 px-3 py-1.5 rounded-full border border-white/40 text-xs text-white">
+          <i class="fa-solid fa-seedling text-emerald-300 animate-bounce" style="animation-duration: 3s"></i>
+          <span>自然共生率: <strong class="font-bold">85%</strong></span>
+        </div>
+        <div class="flex items-center gap-2 bg-white/20 px-3 py-1.5 rounded-full border border-white/40 text-xs text-white">
+          <i class="fa-solid fa-droplet text-blue-200"></i>
+          <span>循環水質: <strong class="font-bold">純水</strong></span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <!-- Sound toggle button with gloss effect -->
+        <button onclick="toggleMute()" id="muteBtn" class="w-9 h-9 rounded-full bg-white/20 border border-white/50 text-white flex items-center justify-center hover:bg-white/40 transition-all shadow-md relative overflow-hidden glossy-reflection">
+          <i class="fa-solid fa-volume-high" id="muteIcon"></i>
+        </button>
+        <div class="text-right text-xs text-white">
+          <p class="font-bold" id="currentTime">12:00 PM</p>
+          <p class="text-[9px] text-sky-200" id="currentDate">2010.07.12</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Grid Workspace -->
+    <main class="flex-grow w-full px-6 py-6 z-10 flex flex-col lg:flex-row gap-6 items-start overflow-hidden relative">
+      
+      <!-- LEFT PANEL: Ecosystem Simulation Control Center -->
+      <section class="w-full lg:w-5/12 h-full flex flex-col gap-6 overflow-y-auto pr-1">
+        
+        <!-- Eco Ecosystem Card with Aero Style Tabs -->
+        <div class="aero-glass rounded-2xl p-5 glossy-reflection flex flex-col gap-4 relative">
+          <div class="absolute -right-3 -top-3 w-16 h-16 bg-emerald-400/20 blur-xl pointer-events-none"></div>
+          <div class="flex justify-between items-center">
+            <h2 class="font-bold text-white text-base flex items-center gap-2">
+              <i class="fa-solid fa-globe text-emerald-300"></i>
+              自然科学プラザ & 環境調整
+            </h2>
+            <span class="text-[10px] bg-emerald-400/30 text-white px-2 py-0.5 rounded-full border border-emerald-300/40">ONLINE</span>
+          </div>
+          
+          <p class="text-xs text-sky-50 line-clamp-2">
+            太陽光・バイオ・水資源テクノロジーを調和させ、楽観的で持続可能なフューチャー・オアシスを構築します。パネルをクリックしてシステム出力を上昇させましょう。
+          </p>
+
+          <!-- Dynamic Energy Progress Bars -->
+          <div class="space-y-3">
+            <div>
+              <div class="flex justify-between text-[11px] text-white mb-1">
+                <span><i class="fa-solid fa-solar-panel mr-1 text-amber-300"></i> 太陽エネルギー効率</span>
+                <span id="solarVal">72%</span>
+              </div>
+              <div class="w-full bg-black/15 h-3 rounded-full overflow-hidden border border-white/20 p-[1px]">
+                <div id="solarBar" class="bg-gradient-to-r from-amber-400 to-emerald-400 h-full rounded-full transition-all duration-500 shadow-inner" style="width: 72%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-[11px] text-white mb-1">
+                <span><i class="fa-solid fa-water mr-1 text-sky-300"></i> 水素バイオ燃料セル</span>
+                <span id="bioVal">55%</span>
+              </div>
+              <div class="w-full bg-black/15 h-3 rounded-full overflow-hidden border border-white/20 p-[1px]">
+                <div id="bioBar" class="bg-gradient-to-r from-sky-400 to-teal-400 h-full rounded-full transition-all duration-500 shadow-inner" style="width: 55%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- System interaction buttons with shiny hover effect -->
+          <div class="grid grid-cols-2 gap-3 mt-1">
+            <button onclick="boostSystem('solar')" class="py-2 px-3 bg-white/20 hover:bg-white/35 active:scale-95 border border-white/50 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-sm glossy-reflection">
+              <i class="fa-solid fa-bolt text-amber-300"></i> 光合成ソーラー強化
+            </button>
+            <button onclick="boostSystem('bio')" class="py-2 px-3 bg-white/20 hover:bg-white/35 active:scale-95 border border-white/50 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-sm glossy-reflection">
+              <i class="fa-solid fa-flask text-sky-300"></i> 水素バイオ液循環
+            </button>
+          </div>
+        </div>
+
+        <!-- Interactive Aero Media Player - Reminiscent of Windows Media Player 11/12 -->
+        <div class="aero-glass rounded-2xl p-5 glossy-reflection flex flex-col gap-3 relative">
+          <div class="flex items-center justify-between border-b border-white/20 pb-2">
+            <h3 class="text-white font-bold text-xs flex items-center gap-2">
+              <i class="fa-solid fa-compact-disc animate-spin text-sky-200" style="animation-duration: 6s"></i>
+              AERO SYNTH AUDIO - 水のワルツ
+            </h3>
+            <span class="text-[9px] text-sky-100 font-mono" id="playerTime">0:00 / 0:30</span>
+          </div>
+
+          <!-- Glassy Visualizer area simulating waves -->
+          <div class="h-16 bg-slate-900/10 rounded-xl border border-white/20 flex items-end justify-between p-2 overflow-hidden gap-1 relative">
+            <!-- Ambient overlay for depth -->
+            <div class="absolute inset-0 bg-gradient-to-t from-sky-400/10 to-transparent pointer-events-none"></div>
+            <!-- Animated equalizer bars -->
+            <div class="eq-bar w-full bg-emerald-400/60 rounded-t-sm transition-all duration-200" style="height: 10%"></div>
+            <div class="eq-bar w-full bg-sky-300/60 rounded-t-sm transition-all duration-200" style="height: 30%"></div>
+            <div class="eq-bar w-full bg-sky-400/60 rounded-t-sm transition-all duration-200" style="height: 50%"></div>
+            <div class="eq-bar w-full bg-teal-300/60 rounded-t-sm transition-all duration-200" style="height: 20%"></div>
+            <div class="eq-bar w-full bg-emerald-300/60 rounded-t-sm transition-all duration-200" style="height: 60%"></div>
+            <div class="eq-bar w-full bg-sky-300/60 rounded-t-sm transition-all duration-200" style="height: 80%"></div>
+            <div class="eq-bar w-full bg-cyan-300/60 rounded-t-sm transition-all duration-200" style="height: 40%"></div>
+            <div class="eq-bar w-full bg-teal-400/60 rounded-t-sm transition-all duration-200" style="height: 15%"></div>
+            <div class="eq-bar w-full bg-sky-400/60 rounded-t-sm transition-all duration-200" style="height: 70%"></div>
+            <div class="eq-bar w-full bg-emerald-400/60 rounded-t-sm transition-all duration-200" style="height: 35%"></div>
+          </div>
+
+          <!-- Music Controls with glossy glass buttons -->
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <button onclick="playMusicTrack()" id="playBtn" class="w-10 h-10 rounded-full bg-sky-400/30 hover:bg-sky-400/50 text-white flex items-center justify-center border border-white/60 shadow-md glossy-reflection transition-all">
+                <i class="fa-solid fa-play text-xs pl-0.5" id="playIcon"></i>
+              </button>
+              <button onclick="stopMusicTrack()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center border border-white/40 shadow-sm transition-all">
+                <i class="fa-solid fa-stop text-xs"></i>
+              </button>
+            </div>
+            
+            <div class="text-right text-[10px] text-sky-100">
+              <p id="audioStatus">オーディオ合成エンジン待機中</p>
+              <p class="text-[9px] opacity-75">※ Web Audio APIによりシンセサイザー音を直接自動生成</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info Capsule - Aero design glossary -->
+        <div class="aero-glass rounded-2xl p-5 glossy-reflection flex flex-col gap-3">
+          <h3 class="text-white font-bold text-xs flex items-center gap-2 border-b border-white/20 pb-2">
+            <i class="fa-solid fa-circle-info text-sky-200"></i>
+            フルティガーエアロとは？
+          </h3>
+          <p class="text-xs text-slate-100 leading-relaxed space-y-1">
+            2000年代中頃から2010年代初頭のデジタル・ガジェットやOSに広く使われた美学。
+            「明るく持続可能な未来」「エコテクノロジー」「水・草花・青空といった地球本来の瑞々しさ」を高次元で融合した、人類史における最も前向きで楽観的なデザイン様式です。
+          </p>
+          <div class="flex flex-wrap gap-1.5 mt-1">
+            <span class="text-[9px] bg-white/20 text-sky-100 px-2 py-0.5 rounded-full border border-white/20">#透明感</span>
+            <span class="text-[9px] bg-white/20 text-sky-100 px-2 py-0.5 rounded-full border border-white/20">#水滴</span>
+            <span class="text-[9px] bg-white/20 text-sky-100 px-2 py-0.5 rounded-full border border-white/20">#流線型</span>
+            <span class="text-[9px] bg-white/20 text-sky-100 px-2 py-0.5 rounded-full border border-white/20">#2010年代ノスタルジー</span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- RIGHT PANEL: Glass Aquatic Oasis Simulation & Interaction -->
+      <section class="w-full lg:w-7/12 h-full flex flex-col gap-4 relative justify-between">
+        
+        <!-- Eco Ecosystem Canvas Display Panel -->
+        <div class="w-full h-[52vh] min-h-[300px] aero-glass rounded-3xl relative overflow-hidden flex flex-col justify-between p-6 glossy-reflection border-2 border-white/60">
+          
+          <!-- Aquatic Sun Rays Background Overlay -->
+          <div class="absolute inset-0 bg-gradient-to-b from-sky-300/25 via-emerald-300/10 to-transparent pointer-events-none mix-blend-screen z-1"></div>
+          <div class="absolute inset-x-0 top-0 h-40 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/30 via-white/5 to-transparent pointer-events-none z-1"></div>
+
+          <!-- Custom Canvas rendering ecological creatures and dynamic leaves/bubbles -->
+          <canvas id="aquaticCanvas" class="absolute inset-0 w-full h-full z-0"></canvas>
+
+          <!-- Glass Panel Header Overlay -->
+          <div class="w-full flex justify-between items-start z-10 pointer-events-none">
+            <div class="bg-white/20 backdrop-blur-md border border-white/50 rounded-2xl px-4 py-2 flex items-center gap-3 shadow-md pointer-events-auto">
+              <div class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></div>
+              <div>
+                <p class="text-[11px] font-bold text-white leading-none">エコ・アクアテラリウム</p>
+                <p class="text-[9px] text-sky-100">画面クリックで水滴波紋と炭酸泡の生成</p>
+              </div>
+            </div>
+
+            <div class="flex gap-2">
+              <button onclick="spawnBubbleWave()" class="bg-white/20 backdrop-blur-md border border-white/50 rounded-2xl px-3 py-1.5 shadow-md hover:bg-white/35 active:scale-95 transition-all text-white text-xs flex items-center gap-1.5 pointer-events-auto glossy-reflection">
+                <i class="fa-solid fa-soap text-sky-200"></i> 泡の波を発生
+              </button>
+              <button onclick="addEcofish()" class="bg-white/20 backdrop-blur-md border border-white/50 rounded-2xl px-3 py-1.5 shadow-md hover:bg-white/35 active:scale-95 transition-all text-white text-xs flex items-center gap-1.5 pointer-events-auto glossy-reflection">
+                <i class="fa-solid fa-fish text-sky-100"></i> デジタル魚追加
+              </button>
+            </div>
+          </div>
+
+          <!-- Natural Leaf Falling Interactive Zone -->
+          <div id="natureContainer" class="absolute inset-0 pointer-events-none z-2"></div>
+
+          <!-- Glass Panel Footer Info Overlay -->
+          <div class="w-full flex justify-between items-end z-10">
+            <div class="bg-black/15 backdrop-blur-md border border-white/30 rounded-2xl px-4 py-2 text-white shadow-md">
+              <p class="text-[10px] text-emerald-200 font-bold uppercase tracking-wider">ECO POWER SOURCE</p>
+              <div class="flex items-center gap-3 mt-0.5">
+                <div class="flex items-center gap-1 text-xs">
+                  <i class="fa-solid fa-shrub text-emerald-300"></i>
+                  <span id="plantCountDisplay">植物: 15株</span>
+                </div>
+                <span class="text-white/40">|</span>
+                <div class="flex items-center gap-1 text-xs">
+                  <i class="fa-solid fa-fish text-sky-300"></i>
+                  <span id="fishCountDisplay">デジタル魚: 3匹</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Glossy Seedling button to simulate gardening -->
+            <button onclick="feedPlantation()" class="w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-500 via-emerald-300 to-white hover:rotate-12 active:scale-90 flex items-center justify-center border-2 border-white text-white shadow-lg transition-all glossy-reflection relative group">
+              <div class="absolute inset-0 bg-gradient-to-b from-white/60 to-transparent h-[45%] rounded-b-full"></div>
+              <i class="fa-solid fa-seedling text-xl drop-shadow"></i>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Interactive Miniature Aero Control Deck (Bottom Widget Bar - Restored layout) -->
+        <div class="w-full bg-white/10 border border-white/40 rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 glossy-reflection">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-400 to-emerald-400 flex items-center justify-center text-white border border-white/50 relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-b from-white/50 to-transparent h-[45%] rounded-b-full"></div>
+              <i class="fa-solid fa-spray-can text-lg"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-white">スプレー・ハイドレーション</p>
+              <p class="text-[10px] text-sky-200">ミストスプレーで画面全体を潤します</p>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-2 w-full md:w-auto">
+            <button onclick="triggerHydration()" class="w-full md:w-auto px-5 py-2.5 bg-gradient-to-r from-sky-400/40 to-teal-400/40 hover:from-sky-400/60 hover:to-teal-400/60 active:scale-95 border border-white/60 rounded-xl text-xs font-bold text-white flex items-center justify-center gap-2 transition-all shadow-md glossy-reflection">
+              <i class="fa-solid fa-droplet text-sky-200 animate-bounce"></i> ハイドロ・ミスト散布
+            </button>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- Aero Gloss Taskbar mimicking Windows Vista/7 Taskbar (Restored layout) -->
+    <footer class="w-full h-14 px-6 flex items-center justify-between aero-glass glossy-reflection z-10 mt-2">
+      <!-- Vista style Start button & Back Button Group -->
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 -mt-2 rounded-full bg-gradient-to-tr from-sky-600 via-sky-400 to-emerald-300 border-2 border-white shadow-xl flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95 transition-all relative overflow-hidden group" onclick="playAeroChime()">
+          <div class="absolute inset-0 bg-gradient-to-b from-white/70 to-transparent h-[45%] rounded-b-full"></div>
+          <i class="fa-solid fa-leaf text-white text-lg drop-shadow-md group-hover:rotate-12 transition-transform duration-300"></i>
+        </div>
+        
+        <!-- Left-aligned Back Button in Taskbar -->
+        <button id="backBtn" onclick="handleGoBack()" class="h-9 px-4 rounded-lg bg-white/20 hover:bg-white/35 active:scale-95 border border-white/50 text-white flex items-center justify-center gap-2 cursor-pointer transition-all glossy-reflection text-xs font-bold" title="ホーム画面に戻る">
+          <i class="fa-solid fa-chevron-left text-[10px]"></i>
+          <span>戻る</span>
+        </button>
+
+        <!-- Pin apps representing Windows 7 Taskbar layout -->
+        <div class="flex items-center gap-2" id="quickLaunchBar">
+          <div onclick="spawnWaterDropletAtWill()" class="w-9 h-9 rounded-lg bg-white/20 hover:bg-white/35 border border-white/50 text-white flex items-center justify-center cursor-pointer transition-all glossy-reflection" title="水滴を追加">
+            <i class="fa-solid fa-droplet text-sm text-sky-200"></i>
+          </div>
+          <div onclick="addEcoLeaf()" class="w-9 h-9 rounded-lg bg-white/20 hover:bg-white/35 border border-white/50 text-white flex items-center justify-center cursor-pointer transition-all glossy-reflection" title="木の葉を降らせる">
+            <i class="fa-solid fa-leaf text-sm text-emerald-300"></i>
+          </div>
+          <div onclick="spawnBubbleWave()" class="w-9 h-9 rounded-lg bg-white/20 hover:bg-white/35 border border-white/50 text-white flex items-center justify-center cursor-pointer transition-all glossy-reflection" title="炭酸泡を発生">
+            <i class="fa-solid fa-soap text-sm text-teal-200"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active environment statistics -->
+      <div class="text-[11px] text-sky-100 flex items-center gap-6">
+        <div class="hidden sm:block">CPU気候シミュレーション負荷: <span class="font-bold text-white">12%</span></div>
+        <div>自然保存区ステータス: <span class="font-bold text-emerald-300"><i class="fa-solid fa-circle-check"></i> 良好</span></div>
+      </div>
+    </footer>
+  </div>
+
+
+  <!-- ==================== STREAMING_CHUNK:Configuring lucid dream overlay... ==================== -->
+  <!-- ==================== LUCID DREAM / NO ESCAPE OVERLAY ==================== -->
+  <!-- Floating bubble container added inside the overlay to allow clean upward bubble animations -->
+  <div id="noEscapeOverlay" class="absolute inset-0 z-50 flex flex-col items-center justify-center pointer-events-none opacity-0 transition-opacity duration-[2000ms] bg-emerald-950/10 overflow-hidden">
+    <div id="noEscapeBubbleContainer" class="absolute inset-0 pointer-events-none z-0"></div>
+    
+    <div class="text-center flex flex-col gap-3 text-white p-6 select-none font-light tracking-[0.25em] z-10">
+      <h2 class="text-xl md:text-2xl font-extralight text-teal-100/90 drop-shadow-lg" style="font-family: 'Noto Sans JP', sans-serif; font-weight: 100;">
+        もう戻れない
+      </h2>
+      <p class="text-[10px] md:text-xs text-sky-200/80 tracking-[0.3em] font-light">
+        Inevitable ending　明晰夢
+      </p>
+    </div>
+  </div>
+
+  <!-- Ambient background sound loading message block -->
+  <div id="soundLoadAlert" class="absolute bottom-16 right-6 max-w-xs aero-glass rounded-xl p-3 text-white text-[11px] z-50 shadow-md transition-all duration-500 translate-y-20 opacity-0 pointer-events-none">
+    <div class="flex items-center gap-2">
+      <i class="fa-solid fa-circle-exclamation text-amber-300 text-sm"></i>
+      <span>オーディオが正常に有効化されました。美しい環境合成音をお楽しみください。</span>
+    </div>
+  </div>
+
+  <script>
+    // Global parameters
+    let isMuted = false;
+    let audioInitialized = false;
+
+    // Synths & Sound Sources
+    let polonSynth = null;     // New echoed polon sound
+    let polonDelay = null;
+
+    // Frutiger Aero BGM Synths (Waiting-inspired original track elements)
+    let faPadSynth = null;
+    let faArpSynth = null;
+    let faBellSynth = null;
+    let faTickSynth = null;
+    let faBgmLoop = null;
+
+    // Aquatic organisms and elements status
+    let solarProgress = 72;
+    let bioProgress = 55;
+    let plantCount = 15;
+    let fishes = [];
+
+    // Screen State
+    let isLucidDreamActive = false;
+
+    // Set Clock and Date
+    function updateClock() {
+      const now = new Date();
+      let hours = now.getHours();
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12; // 0 hour is 12
+      document.getElementById('currentTime').innerText = `${hours}:${minutes} ${ampm}`;
+      
+      const year = now.getFullYear();
+      const month = (now.getMonth() + 1).toString().padStart(2, '0');
+      const date = now.getDate().toString().padStart(2, '0');
+      document.getElementById('currentDate').innerText = `${year}.${month}.${date}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Ripple Effect Logic on Background
+    const rippleCanvas = document.getElementById('rippleCanvas');
+    const rx = rippleCanvas.getContext('2d');
+    let width = rippleCanvas.width = window.innerWidth || 1;
+    let height = rippleCanvas.height = window.innerHeight || 1;
+
+    let rippleMap = [];
+    let lastMap = [];
+    let size = width * height;
+    const damping = 0.98;
+
+    // Reset Ripple Maps with safety checks
+    function initRippleMap() {
+      width = rippleCanvas.width = window.innerWidth || 1;
+      height = rippleCanvas.height = window.innerHeight || 1;
+      size = width * height;
+      
+      if (width <= 0 || height <= 0 || size <= 0) return;
+      
+      rippleMap = new Array(size).fill(0);
+      lastMap = new Array(size).fill(0);
+    }
+    initRippleMap();
+
+    window.addEventListener('resize', () => {
+      initRippleMap();
+    });
+
+    // Create a Ripple at coordinates
+    function ripple(x, y, rStrength) {
+      if (width <= 0 || height <= 0) return;
+      x = Math.floor(x);
+      y = Math.floor(y);
+      if (x < 1 || x >= width - 1 || y < 1 || y >= height - 1) return;
+      
+      const index = x + y * width;
+      if (index >= 0 && index < size) {
+        rippleMap[index] = rStrength;
+      }
+    }
+
+    // Update simulation and render ripple to canvas with IndexSizeError guards
+    function updateRipple() {
+      if (width <= 1 || height <= 1 || size <= 1 || !rx) return;
+      
+      try {
+        const imgData = rx.getImageData(0, 0, width, height);
+        const data = imgData.data;
+
+        // Calculate wave formula
+        for (let i = width; i < size - width; i++) {
+          rippleMap[i] = (
+            (lastMap[i - 1] + 
+             lastMap[i + 1] + 
+             lastMap[i - width] + 
+             lastMap[i + width]) >> 1
+          ) - rippleMap[i];
+
+          rippleMap[i] = Math.floor(rippleMap[i] * damping);
+        }
+
+        // Map waves to pixel intensity (Refraction approximation)
+        for (let i = 0; i < size; i++) {
+          const value = rippleMap[i];
+          if (value !== 0) {
+            const index = i * 4;
+            if (index + 2 < data.length) {
+              data[index] += value;     // R
+              data[index + 1] += value; // G
+              data[index + 2] += value; // B
+            }
+          }
+        }
+
+        // Swap buffer arrays
+        const temp = lastMap;
+        lastMap = rippleMap;
+        rippleMap = temp;
+
+        rx.putImageData(imgData, 0, 0);
+      } catch (e) {
+        // Safe bypass
+      }
+    }
+
+    // Canvas Aquatic Aquarium Rendering Logic
+    const aqCanvas = document.getElementById('aquaticCanvas');
+    const ctx = aqCanvas.getContext('2d');
+    let aqWidth = aqCanvas.width = aqCanvas.parentNode ? (aqCanvas.parentNode.clientWidth || 1) : 1;
+    let aqHeight = aqCanvas.height = aqCanvas.parentNode ? (aqCanvas.parentNode.clientHeight || 1) : 1;
+
+    window.addEventListener('resize', () => {
+      if (aqCanvas.parentNode) {
+        aqWidth = aqCanvas.width = aqCanvas.parentNode.clientWidth || 1;
+        aqHeight = aqCanvas.height = aqCanvas.parentNode.clientHeight || 1;
+      }
+    });
+
+    // Fish Definition
+    class EcoFish {
+      constructor() {
+        this.color1 = Math.random() > 0.5 ? '#38bdf8' : '#22c55e';
+        this.color2 = '#ffffff';
+        this.size = 12 + Math.random() * 8;
+        this.reset();
+      }
+
+      reset() {
+        this.x = -20;
+        this.y = Math.random() * (aqHeight > 0 ? aqHeight : 300);
+        this.vx = 0.8 + Math.random() * 1.5;
+        this.vy = (Math.random() - 0.5) * 0.4;
+        this.tailAngle = 0;
+        this.tailSpeed = 0.08 + Math.random() * 0.08;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.tailAngle += this.tailSpeed;
+        
+        // Randomly drift slightly vertically
+        if (Math.random() < 0.02) {
+          this.vy = (Math.random() - 0.5) * 0.6;
+        }
+
+        // Loop screen
+        if (this.x > aqWidth + 30) {
+          this.reset();
+        }
+      }
+
+      draw() {
+        if (aqWidth <= 1 || aqHeight <= 1) return;
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = this.color1;
+
+        // Draw glossy streamline fish body
+        ctx.beginPath();
+        ctx.ellipse(0, 0, this.size, this.size / 2.2, 0, 0, Math.PI * 2);
+        const gradient = ctx.createLinearGradient(-this.size, 0, this.size, 0);
+        gradient.addColorStop(0, this.color1);
+        gradient.addColorStop(0.6, this.color2);
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        ctx.fillStyle = gradient;
+        ctx.fill();
+
+        // Draw delicate tail fin moving back and forth
+        const tailOffset = Math.sin(this.tailAngle) * (this.size * 0.4);
+        ctx.beginPath();
+        ctx.moveTo(-this.size, 0);
+        ctx.quadraticCurveTo(-this.size * 1.5, -this.size / 2 + tailOffset, -this.size * 1.8, -this.size * 0.8 + tailOffset);
+        ctx.lineTo(-this.size * 1.6, tailOffset);
+        ctx.lineTo(-this.size * 1.8, this.size * 0.8 + tailOffset);
+        ctx.quadraticCurveTo(-this.size * 1.5, this.size / 2 + tailOffset, -this.size, 0);
+        ctx.fillStyle = this.color1;
+        ctx.fill();
+
+        // Gloss highlight
+        ctx.beginPath();
+        ctx.ellipse(this.size * 0.1, -this.size * 0.1, this.size * 0.6, this.size * 0.12, 0, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.fill();
+
+        // Eye
+        ctx.beginPath();
+        ctx.arc(this.size * 0.5, -this.size * 0.1, 2, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+
+        ctx.restore();
+      }
+    }
+
+    // Spawn Initial fishes
+    for (let i = 0; i < 3; i++) {
+      fishes.push(new EcoFish());
+    }
+
+    // Dynamic bubble arrays inside aquarium container
+    let aqBubbles = [];
+    class AqBubble {
+      constructor(x, y, speed, size) {
+        this.x = x || Math.random() * aqWidth;
+        this.y = y || aqHeight + 20;
+        this.speed = speed || 0.6 + Math.random() * 1.2;
+        this.size = size || 3 + Math.random() * 6;
+        this.wobble = Math.random() * 100;
+        this.wobbleSpeed = 0.02 + Math.random() * 0.03;
+      }
+
+      update() {
+        this.y -= this.speed;
+        this.wobble += this.wobbleSpeed;
+        this.x += Math.sin(this.wobble) * 0.25;
+      }
+
+      draw() {
+        if (aqWidth <= 1 || aqHeight <= 1) return;
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        
+        // Shiny liquid glow
+        const radGrad = ctx.createRadialGradient(
+          this.x - this.size * 0.3, this.y - this.size * 0.3, this.size * 0.1,
+          this.x, this.y, this.size
+        );
+        radGrad.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
+        radGrad.addColorStop(0.4, 'rgba(255, 255, 255, 0.25)');
+        radGrad.addColorStop(0.8, 'rgba(14, 165, 233, 0.35)');
+        radGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+        ctx.fillStyle = radGrad;
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    // Populate initial background aquarium bubbles
+    for (let i = 0; i < 12; i++) {
+      aqBubbles.push(new AqBubble(null, Math.random() * aqHeight));
+    }
+
+
+    // ==================== AUDIO DESIGN & CODE ====================
+    function initSynth() {
+      if (audioInitialized) return;
+      
+      try {
+        Tone.start();
+
+        // --- ECO-POLON TAP EFFECT DESIGN ---
+        // Delicate, slightly echoed glass/water tap (Polon) - Greatly reduced volume for sleep
+        polonDelay = new Tone.FeedbackDelay({
+          delayTime: "8n.",
+          feedback: 0.35,
+          wet: 0.4
+        }).toDestination();
+
+        polonSynth = new Tone.PolySynth(Tone.Synth, {
+          oscillator: { type: "triangle" },
+          envelope: {
+            attack: 0.004,
+            decay: 0.18,
+            sustain: 0,
+            release: 0.15
+          }
+        }).connect(polonDelay);
+        polonSynth.volume.value = -12; // Lowered to be extremely gentle
+
+        // --- ORIGINAL FRUTIGER AERO TRACK SYNTHS ---
+        // Inspired by Leverfall's "Waiting" - Bright, watery, clean, extremely optimistic
+        // Master Ambient BGM Filter to cut out harsh high frequencies (creating a sleep-conducive sound)
+        const bgmFilter = new Tone.Filter({
+          type: "lowpass",
+          frequency: 1000, // Keep it soft, warm, and highly sleep-inducing (no high beeps)
+          Q: 1
+        }).toDestination();
+
+        // 1. Warm Airy Synth Pad for deep sky backdrop
+        faPadSynth = new Tone.PolySynth(Tone.Synth, {
+          oscillator: { type: "sine" },
+          envelope: {
+            attack: 2.2,
+            decay: 1.5,
+            sustain: 0.75,
+            release: 2.5
+          }
+        }).connect(bgmFilter);
+        faPadSynth.volume.value = -10; // Keep the cozy warm pad solid and soft
+
+        // 2. High Shimmering Glass Bell/Pluck - Volume reduced and filtered
+        let bellDelay = new Tone.FeedbackDelay("4n", 0.4).connect(bgmFilter);
+        faBellSynth = new Tone.PolySynth(Tone.Synth, {
+          oscillator: { type: "sine" },
+          envelope: {
+            attack: 0.05, // Slightly softer attack
+            decay: 0.4,
+            sustain: 0,
+            release: 0.4
+          }
+        }).connect(bellDelay);
+        faBellSynth.volume.value = -20; // Reduced significantly for dreaminess
+
+        // 3. Gentle cascading synth arpeggiator (Triangle/Sine hybrid) - Highly dampened and soft
+        let arpDelay = new Tone.FeedbackDelay("16n", 0.25).connect(bgmFilter);
+        faArpSynth = new Tone.PolySynth(Tone.Synth, {
+          oscillator: { type: "sine" }, // Sine oscillator is much softer and less "picopico" than triangle
+          envelope: {
+            attack: 0.02,
+            decay: 0.08,
+            sustain: 0.1,
+            release: 0.08
+          }
+        }).connect(arpDelay);
+        faArpSynth.volume.value = -22; // Very faint, flowing like a distant tiny stream
+
+        // 4. Subtle bubble clicker percussive synth
+        faTickSynth = new Tone.PolySynth(Tone.Synth, {
+          oscillator: { type: "sine" },
+          envelope: {
+            attack: 0.001,
+            decay: 0.015,
+            sustain: 0,
+            release: 0.01
+          }
+        }).connect(bgmFilter);
+        faTickSynth.volume.value = -24; // Very subtle carbonated crackle
+
+        // --- MASTER SEQUENCER FOR TRACK (112 BPM) ---
+        // Optimistic, bright chord progression: Fmaj7 - G6 - Em7 - Am9
+        const chords = [
+          ["F3", "A3", "C4", "E4"],  // Fmaj7
+          ["G3", "B3", "D4", "G4"],  // G6
+          ["E3", "G3", "B3", "D4"],  // Em7
+          ["A3", "C4", "E4", "G4"]   // Am9
+        ];
+
+        // Pentatonic patterns for cascading water droplets / arpeggio
+        const arpPatterns = [
+          ["C5", "E5", "G5", "C6", "G5", "E5"],
+          ["D5", "G5", "B5", "D6", "B5", "G5"],
+          ["E5", "G5", "B5", "E6", "B5", "G5"],
+          ["C5", "E5", "A5", "C6", "A5", "E5"]
+        ];
+
+        let beatCounter = 0;
+
+        faBgmLoop = new Tone.Loop(time => {
+          if (isMuted || isLucidDreamActive) return;
+
+          let chordIndex = Math.floor(beatCounter / 16) % chords.length;
+          let subBeat = beatCounter % 16; // 16th note counting
+
+          // Play pad chord progression on measure start (every 16 beats)
+          if (subBeat === 0) {
+            faPadSynth.triggerAttackRelease(chords[chordIndex], "4m", time);
+          }
+
+          // Shimmering Bell melodies (Windows Vista optimistic style)
+          if (subBeat === 4 || subBeat === 10) {
+            let notes = ["C6", "E6", "G6", "A6", "B6"];
+            let randomBell = notes[Math.floor(Math.random() * notes.length)];
+            faBellSynth.triggerAttackRelease(randomBell, "2n", time);
+          }
+
+          // Cascading 16th-note arpeggiator sequence
+          let pattern = arpPatterns[chordIndex];
+          let noteToPlay = pattern[subBeat % pattern.length];
+          faArpSynth.triggerAttackRelease(noteToPlay, "16n", time);
+
+          // Water bubble rhythmic elements (Tick click click)
+          if (subBeat % 4 === 0 || subBeat === 14) {
+            faTickSynth.triggerAttackRelease("C6", "32n", time);
+          }
+
+          beatCounter++;
+          
+          // Update player duration visually
+          let secs = Math.floor(beatCounter * 0.134) % 60; // Approximate counter to seconds
+          let playerTimeEl = document.getElementById('playerTime');
+          if (playerTimeEl) {
+            playerTimeEl.innerText = `0:${secs.toString().padStart(2, '0')} / 0:30`;
+          }
+        }, "16n");
+
+        Tone.Transport.bpm.value = 112;
+        Tone.Transport.start();
+        audioInitialized = true;
+        
+        const audioStatusEl = document.getElementById('audioStatus');
+        if (audioStatusEl) audioStatusEl.innerText = "オリジナル環境音: 演奏可能";
+        
+        // Show successful activation toast
+        const toast = document.getElementById('soundLoadAlert');
+        if (toast) {
+          toast.style.transform = 'translateY(0)';
+          toast.style.opacity = '1';
+          setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(20px)';
+          }, 5000);
+        }
+
+      } catch (err) {
+        console.warn("Audio initialization suspended.", err);
+      }
+    }
+
+
+    // Trigger the Vista Aero sound theme chime
+    function playAeroChime() {
+      initSynth();
+      if (isMuted || !audioInitialized || !faBellSynth) return;
+      try {
+        const now = Tone.now();
+        faBellSynth.triggerAttackRelease("C5", "8n", now);
+        faBellSynth.triggerAttackRelease("E5", "8n", now + 0.12);
+        faBellSynth.triggerAttackRelease("G5", "8n", now + 0.24);
+        faBellSynth.triggerAttackRelease("C6", "2n", now + 0.36);
+      } catch (e) {
+        console.warn("Chime playback bypassed:", e.message);
+      }
+    }
+
+    // Trigger echoed "polon" tap sound
+    function playPolonChime() {
+      initSynth();
+      if (isMuted || !audioInitialized || !polonSynth) return;
+      try {
+        const notes = ["G5", "C6", "E6"];
+        const randNote = notes[Math.floor(Math.random() * notes.length)];
+        polonSynth.triggerAttackRelease(randNote, "8n", Tone.now());
+      } catch (e) {
+        console.warn("Polon audio bypassed:", e.message);
+      }
+    }
+
+    // Track state for generative player
+    let isTrackPlaying = false;
+
+    function playMusicTrack() {
+      initSynth();
+      const playIcon = document.getElementById('playIcon');
+      
+      if (isTrackPlaying) {
+        stopMusicTrack();
+        return;
+      }
+
+      isTrackPlaying = true;
+      if (playIcon) playIcon.className = "fa-solid fa-pause text-xs";
+      
+      const audioStatusEl = document.getElementById('audioStatus');
+      if (audioStatusEl) audioStatusEl.innerText = "環境シンセ曲: 演奏中...";
+
+      if (faBgmLoop) {
+        faBgmLoop.start(0);
+      }
+    }
+
+    function stopMusicTrack() {
+      isTrackPlaying = false;
+      const playIcon = document.getElementById('playIcon');
+      if (playIcon) playIcon.className = "fa-solid fa-play text-xs pl-0.5";
+      
+      const audioStatusText = document.getElementById('audioStatus');
+      if (audioStatusText) audioStatusText.innerText = "演奏停止";
+      
+      const playerTimeText = document.getElementById('playerTime');
+      if (playerTimeText) playerTimeText.innerText = "0:00 / 0:30";
+      
+      if (faBgmLoop) {
+        faBgmLoop.stop();
+      }
+    }
+
+    function toggleMute() {
+      isMuted = !isMuted;
+      const icon = document.getElementById('muteIcon');
+      if (isMuted) {
+        if (icon) icon.className = "fa-solid fa-volume-xmark";
+        document.getElementById('muteBtn').classList.add('bg-rose-500/30');
+      } else {
+        if (icon) icon.className = "fa-solid fa-volume-high";
+        document.getElementById('muteBtn').classList.remove('bg-rose-500/30');
+        initSynth();
+      }
+    }
+
+
+    // ==================== SCREEN TRANSITION HANDLERS ====================
+    // Home to Dream Screen
+    function enterDream() {
+      initDreamAudio();
+      
+      const home = document.getElementById('homeScreen');
+      const game = document.getElementById('gameScreen');
+      
+      // Fade-out Home, Fade-in Game Simulator
+      home.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
+      setTimeout(() => {
+        home.classList.add('hidden');
+        game.classList.remove('hidden');
+        // Force Reflow
+        game.offsetHeight;
+        game.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-10');
+        
+        // Auto-start full track in game screen
+        if (!isTrackPlaying) {
+          playMusicTrack();
+        }
+      }, 500);
+    }
+
+    function initDreamAudio() {
+      initSynth();
+      playAeroChime();
+    }
+
+    // Back button event: 1/3 Lucid Dream Nightmare Event Or Go Back
+    function handleGoBack() {
+      if (isLucidDreamActive) return; // Completely disabled once locked
+
+      initSynth();
+      
+      // Calculate 1/3 (33.33%) chance
+      const randomValue = Math.random();
+      if (randomValue < 1/3) {
+        // TRAPPED: Only Ending Lucid Dream Event occurs
+        isLucidDreamActive = true;
+        
+        // Stop gorgeous melodic music track
+        stopMusicTrack();
+
+        // Silent deep mechanical drone (AC hum / buzz noise is fully removed as requested)
+        // Only trigger heavy, quiet low pitch sound without high peaks
+        try {
+          if (faBgmLoop) faBgmLoop.stop();
+          if (faPadSynth) {
+            faPadSynth.releaseAll();
+            // Soft and quiet low background sound for liminal drone feel
+            faPadSynth.triggerAttack(["C2", "G2"], Tone.now());
+            faPadSynth.volume.value = -18;
+          }
+          if (faArpSynth) faArpSynth.releaseAll();
+          if (faBellSynth) faBellSynth.releaseAll();
+        } catch(e) {
+          console.warn(e);
+        }
+
+        // Hide all game controls UI, Panels and Header, keeping background
+        const header = document.querySelector('header');
+        const mainPanel = document.querySelector('main');
+        const footer = document.querySelector('footer');
+        
+        if (header) header.classList.add('transition-all', 'duration-1000', 'opacity-0', 'pointer-events-none');
+        if (mainPanel) mainPanel.classList.add('transition-all', 'duration-1000', 'opacity-0', 'pointer-events-none');
+        if (footer) footer.classList.add('transition-all', 'duration-1000', 'opacity-0', 'pointer-events-none');
+
+        // Display "No Escape / Lucid Dream" centered text overlay (Static, no pulse)
+        const overlay = document.getElementById('noEscapeOverlay');
+        if (overlay) {
+          overlay.classList.remove('pointer-events-none');
+          overlay.classList.add('opacity-100');
+        }
+        
+        // Start spawning upward floating bubbles for the lucid dream state
+        startEscapeBubbleSpawner();
+
+      } else {
+        // SAFE: Go back to Home Screen
+        playAeroChime();
+        stopMusicTrack();
+
+        const home = document.getElementById('homeScreen');
+        const game = document.getElementById('gameScreen');
+
+        if (game) game.classList.add('opacity-0', 'pointer-events-none', 'translate-y-10');
+        setTimeout(() => {
+          if (game) game.classList.add('hidden');
+          if (home) {
+            home.classList.remove('hidden');
+            home.offsetHeight;
+            home.classList.remove('opacity-0', 'pointer-events-none', 'scale-95');
+          }
+        }, 800);
+      }
+    }
+
+    // Dynamic upward escape bubbles generation logic
+    function startEscapeBubbleSpawner() {
+      const container = document.getElementById('noEscapeBubbleContainer');
+      if (!container) return;
+
+      // Spawn a beautiful, soft glass bubble every 350ms indefinitely
+      setInterval(() => {
+        if (!isLucidDreamActive) return;
+
+        const bubble = document.createElement('div');
+        bubble.className = 'escape-bubble';
+        
+        // Randomize dimensions to match classic vector carbonation bubbles
+        const bubbleSize = 10 + Math.random() * 32;
+        bubble.style.width = `${bubbleSize}px`;
+        bubble.style.height = `${bubbleSize}px`;
+        
+        // Place horizontally random across full width
+        bubble.style.left = `${Math.random() * 100}%`;
+        
+        // Wobble displacement amount for physics animation
+        const wobbleX = (Math.random() - 0.5) * 120;
+        bubble.style.setProperty('--wobble-x', `${wobbleX}px`);
+
+        // Randomize floating pace to look organic
+        const duration = 7 + Math.random() * 5;
+        bubble.style.animationDuration = `${duration}s`;
+
+        container.appendChild(bubble);
+
+        // Cleanup DOM once bubble leaves viewport
+        setTimeout(() => {
+          bubble.remove();
+        }, duration * 1000);
+      }, 350);
+    }
+
+
+    // Spawns water droplets that slide down desktop
+    function spawnWaterDropletAtWill() {
+      const drop = document.createElement('div');
+      drop.className = 'water-droplet';
+      const dSize = 15 + Math.random() * 25;
+      drop.style.width = `${dSize}px`;
+      drop.style.height = `${dSize}px`;
+      drop.style.left = `${Math.random() * 85 + 5}%`;
+      drop.style.top = `-50px`;
+      document.body.appendChild(drop);
+
+      // Play echoed polon sound
+      playPolonChime();
+
+      // Fluid water gravity physics
+      let y = -50;
+      let x = parseFloat(drop.style.left) * window.innerWidth / 100;
+      let vy = 1 + Math.random() * 2;
+      let vx = 0;
+
+      // Drop physics update
+      function fall() {
+        y += vy;
+        vy += 0.05; // gravity
+        vx += (Math.random() - 0.5) * 0.15;
+        x += vx;
+
+        drop.style.top = `${y}px`;
+        drop.style.left = `${x}px`;
+
+        if (y < window.innerHeight - 80) {
+          requestAnimationFrame(fall);
+        } else {
+          // Splat ripple at bottom
+          ripple(x, y, 400);
+          playPolonChime();
+          drop.remove();
+        }
+      }
+      fall();
+
+      // Ripple interact on click
+      drop.addEventListener('mousedown', (e) => {
+        ripple(e.clientX, e.clientY, 800);
+        playPolonChime();
+        drop.remove();
+      });
+    }
+
+    // Spawns falling organic clover/leaves
+    function addEcoLeaf() {
+      const leaf = document.createElement('div');
+      leaf.className = 'absolute pointer-events-auto cursor-pointer z-20 text-emerald-300 drop-shadow-sm transition-all duration-300 hover:scale-125';
+      leaf.innerHTML = '<i class="fa-solid fa-leaf"></i>';
+      
+      const lSize = 14 + Math.random() * 16;
+      leaf.style.fontSize = `${lSize}px`;
+      leaf.style.left = `${Math.random() * 90}%`;
+      leaf.style.top = `-30px`;
+      
+      const natureContainer = document.getElementById('natureContainer');
+      if (natureContainer) natureContainer.appendChild(leaf);
+
+      let y = -30;
+      let x = parseFloat(leaf.style.left) * window.innerWidth / 100;
+      let rot = Math.random() * 360;
+      let rotSpeed = (Math.random() - 0.5) * 2;
+      let wobble = Math.random() * 100;
+
+      function glide() {
+        y += 1.2 + Math.random() * 0.8;
+        wobble += 0.02;
+        x += Math.sin(wobble) * 1.5;
+        rot += rotSpeed;
+
+        leaf.style.top = `${y}px`;
+        leaf.style.left = `${x}px`;
+        leaf.style.transform = `rotate(${rot}deg)`;
+
+        if (y < window.innerHeight - 80) {
+          requestAnimationFrame(glide);
+        } else {
+          leaf.style.opacity = '0';
+          setTimeout(() => leaf.remove(), 1000);
+        }
+      }
+      glide();
+
+      // Click leaf to transform into hydrogen bubble
+      leaf.addEventListener('mousedown', () => {
+        const bubble = new AqBubble(x, y, 2.5, lSize/2);
+        aqBubbles.push(bubble);
+        playPolonChime();
+        leaf.remove();
+      });
+    }
+
+    // Automatic ambient spawns for nostalgic feel
+    setInterval(() => {
+      const threshold = isLucidDreamActive ? 0.92 : 0.4;
+      if (Math.random() > threshold) {
+        spawnWaterDropletAtWill();
+      }
+      if (Math.random() > (isLucidDreamActive ? 0.95 : 0.6)) {
+        addEcoLeaf();
+      }
+    }, 4000);
+
+    // Hydration mist spray animation
+    function triggerHydration() {
+      initSynth();
+      playPolonChime();
+      
+      // Spawn massive water droplets and ripples
+      for (let i = 0; i < 15; i++) {
+        setTimeout(() => {
+          const rxPos = Math.random() * window.innerWidth;
+          const ryPos = Math.random() * window.innerHeight;
+          ripple(rxPos, ryPos, 300 + Math.random() * 400);
+          
+          if (Math.random() > 0.4) {
+            spawnWaterDropletAtWill();
+          }
+        }, i * 150);
+      }
+    }
+
+    // Spawns interactive pop bubble wave inside Aquarium
+    function spawnBubbleWave() {
+      initSynth();
+      playPolonChime();
+      for (let i = 0; i < 20; i++) {
+        setTimeout(() => {
+          aqBubbles.push(new AqBubble(Math.random() * aqWidth));
+        }, i * 100);
+      }
+    }
+
+    // Boost environmental parameters on clicks
+    function boostSystem(type) {
+      initSynth();
+      playPolonChime();
+      if (type === 'solar') {
+        solarProgress = Math.min(100, solarProgress + 5);
+        const solarBar = document.getElementById('solarBar');
+        const solarVal = document.getElementById('solarVal');
+        if (solarBar) solarBar.style.width = `${solarProgress}%`;
+        if (solarVal) solarVal.innerText = `${solarProgress}%`;
+        ripple(window.innerWidth * 0.25, window.innerHeight * 0.4, 600);
+      } else if (type === 'bio') {
+        bioProgress = Math.min(100, bioProgress + 7);
+        const bioBar = document.getElementById('bioBar');
+        const bioVal = document.getElementById('bioVal');
+        if (bioBar) bioBar.style.width = `${bioProgress}%`;
+        if (bioVal) bioVal.innerText = `${bioProgress}%`;
+        ripple(window.innerWidth * 0.25, window.innerHeight * 0.6, 600);
+        spawnBubbleWave();
+      }
+    }
+
+    // Plantation simulator
+    function feedPlantation() {
+      initSynth();
+      playPolonChime();
+      plantCount += 2;
+      const display = document.getElementById('plantCountDisplay');
+      if (display) display.innerText = `植物: ${plantCount}株`;
+      
+      for (let i = 0; i < 6; i++) {
+        addEcoLeaf();
+      }
+    }
+
+    // Add fish simulator
+    function addEcofish() {
+      initSynth();
+      playPolonChime();
+      if (fishes.length < 10) {
+        fishes.push(new EcoFish());
+        const display = document.getElementById('fishCountDisplay');
+        if (display) display.innerText = `デジタル魚: ${fishes.length}匹`;
+      }
+    }
+
+
+    // Master interaction mapping clicks to the ripple effect canvas & polon sound pop
+    window.addEventListener('mousedown', (e) => {
+      // Create ripple on the whole background
+      ripple(e.clientX, e.clientY, 800);
+      initSynth();
+      
+      // Play echoing polon tap sound
+      playPolonChime();
+      
+      // If clicked inside aquarium area, produce local bubble
+      if (aqCanvas) {
+        const aqBox = aqCanvas.getBoundingClientRect();
+        if (
+          e.clientX >= aqBox.left && 
+          e.clientX <= aqBox.right && 
+          e.clientY >= aqBox.top && 
+          e.clientY <= aqBox.bottom
+        ) {
+          const localX = e.clientX - aqBox.left;
+          const localY = e.clientY - aqBox.top;
+          aqBubbles.push(new AqBubble(localX, localY, 1.5 + Math.random(), 6 + Math.random() * 6));
+        }
+      }
+    });
+
+    // Master Animation Loop
+    function mainLoop() {
+      updateRipple();
+
+      if (ctx && aqWidth > 1 && aqHeight > 1) {
+        ctx.clearRect(0, 0, aqWidth, aqHeight);
+        
+        aqBubbles = aqBubbles.filter(b => b.y > -20);
+        aqBubbles.forEach(b => {
+          b.update();
+          b.draw();
+        });
+
+        fishes.forEach(f => {
+          f.update();
+          f.draw();
+        });
+      }
+
+      requestAnimationFrame(mainLoop);
+    }
+
+    // Start on window load
+    window.onload = function() {
+      mainLoop();
+      // Aesthetic initial startup droplets
+      setTimeout(() => {
+        for(let i=0; i<3; i++) {
+          setTimeout(spawnWaterDropletAtWill, i * 600);
+        }
+      }, 1500);
+    }
+  </script>
+</body>
+</html>
