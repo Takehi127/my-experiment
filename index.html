@@ -4,25 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>尚絅学院大学 心理学実験室</title>
-    <!-- Google Fonts の導入（モダンな日本語ゴシック体） -->
+    <!-- Google Fonts の導入（モダンな日本語ゴシック体と近未来系フォント） -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    
     <style>
-        /* デザインシステム・変数の定義（青を基調とした清潔感のある配色） */
+        /* フルティガー・エアロ デザインシステム・変数の定義（ミントブルー、澄んだ水、光、ガラス） */
         :root {
-            --primary-color: #1e40af;      /* 深みのあるロイヤルブルー（信頼感・誠実さ） */
-            --primary-light: #dbeafe;      /* 清潔感のある淡いアイスブルー（背景や装飾用） */
-            --accent-color: #3b82f6;       /* 明るいアクアブルー（ホバー時用） */
-            --bg-color: #f8fafc;            /* 極めて淡いスレートブルー（目に優しいベース） */
-            --text-main: #0f172a;          /* 視認性の高いダークスレート（引き締まった黒） */
-            --text-sub: #475569;           /* 補足用のシックなグレーブルー */
-            --white: #ffffff;
-            --shadow-sm: 0 2px 8px rgba(30, 64, 175, 0.04);
-            --shadow-md: 0 10px 20px -5px rgba(15, 23, 42, 0.08), 0 4px 6px -2px rgba(15, 23, 42, 0.04);
-            --shadow-lg: 0 20px 25px -5px rgba(30, 64, 175, 0.12), 0 10px 10px -5px rgba(30, 64, 175, 0.06);
-            --radius: 16px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --primary-color: #0284c7;      /* 澄んだアクアブルー */
+            --primary-light: #e0f2fe;      /* 爽やかな淡いアイスブルー */
+            --accent-color: #06b6d4;       /* 爽快なミントアクア */
+            --accent-light: #ecfeff;       /* 淡いミントブルー */
+            --bg-gradient: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 30%, #2dd4bf 70%, #06b6d4 100%); /* 澄み切った青空から清涼なミントアクアへのグラデーション */
+            --text-main: #0f172a;          /* 視認性の高いダークスレート */
+            --text-sub: #1e293b;           /* 補足用のダークグレー */
+            --white: rgba(255, 255, 255, 0.42); /* 透き通るガラス素材のベース */
+            --border-glass: rgba(255, 255, 255, 0.65); /* ガラスのハイライトエッジ */
+            --shadow-sm: 0 4px 10px rgba(2, 132, 199, 0.06);
+            --shadow-md: 0 12px 30px -10px rgba(15, 23, 42, 0.15), inset 0 2px 4px rgba(255, 255, 255, 0.6);
+            --shadow-lg: 0 25px 50px -12px rgba(2, 132, 199, 0.25), inset 0 4px 10px rgba(255, 255, 255, 0.7);
+            --radius: 28px;                /* フルティガー・エアロらしい、より優しく豊かな丸み */
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 弾むような質感のトランジション */
+            --glass-blur: blur(20px) saturate(190%);
         }
 
         /* 共通リセット＆ベーススタイル */
@@ -34,12 +38,14 @@
 
         html, body {
             height: 100%;
-            overflow: hidden; /* デスクトップ環境等で1画面に収めるため、デフォルトでスクロールを抑制 */
+            overflow: hidden; /* 1画面に収めるため、デフォルトでスクロールを抑制 */
         }
 
         body {
             font-family: 'Noto Sans JP', sans-serif;
-            background-color: var(--bg-color);
+            background: var(--bg-gradient);
+            background-size: 200% 200%;
+            animation: gradientMove 16s ease infinite; /* ゆったりとした背景の揺らぎ */
             color: var(--text-main);
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
@@ -47,135 +53,222 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+        }
+
+        /* 背景グラデーションのゆったりとしたアニメーション */
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* フルティガー・エアロ専用キャンバス */
+        #frutiger-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none; /* 下のボタンなどのクリックイベントを絶対に邪魔しない */
         }
 
         /* 1画面に収めるためのメインコンテナ */
         .container {
             width: 100%;
-            max-width: 1040px;
+            max-width: 1060px;
             height: 100vh;
             height: 100dvh;
             padding: 24px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* 上中下に綺麗に等間隔配置 */
+            justify-content: space-between; /* 上中下に等間隔配置 */
             box-sizing: border-box;
+            position: relative;
+            z-index: 2;
         }
 
-        /* ヘッダーデザイン（高さを抑えてコンパクトに） */
+        /* ヘッダーデザイン（極上のグラスモルフィズム） */
         header {
             text-align: center;
-            padding: 20px 24px;
+            padding: 24px 30px;
             background-color: var(--white);
             border-radius: var(--radius);
-            box-shadow: var(--shadow-sm);
-            border: 1px solid rgba(30, 64, 175, 0.08);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-glass);
             position: relative;
             overflow: hidden;
             flex-shrink: 0; /* 縮まないように固定 */
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
         }
 
+        /* 光の光沢感（シマー効果）の装飾線 */
         header::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            height: 6px;
+            background: linear-gradient(90deg, #38bdf8, #60a5fa, #2dd4bf, #06b6d4);
         }
 
         .univ-tag {
-            display: inline-block;
-            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.82rem;
             font-weight: 700;
-            color: var(--primary-color);
-            background-color: var(--primary-light);
-            padding: 4px 12px;
+            color: #0369a1;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(224, 242, 254, 0.7) 100%);
+            padding: 5px 16px;
             border-radius: 50px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             letter-spacing: 0.05em;
+            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.1), inset 0 1px 1px white;
+            border: 1px solid rgba(255, 255, 255, 0.6);
         }
 
         h1 {
-            font-size: 1.6rem;
+            font-size: 1.75rem;
             font-weight: 700;
-            color: var(--text-main);
+            color: #03448c;
             letter-spacing: -0.01em;
             margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.6);
         }
 
         .greeting {
-            max-width: 720px;
+            max-width: 740px;
             margin: 0 auto;
             font-size: 0.95rem;
             color: var(--text-sub);
             font-weight: 400;
             word-break: keep-all;
             overflow-wrap: break-word;
+            text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
         }
 
-        /* メインエリア：縮小可能にして1画面に収める */
+        /* メインエリア */
         main {
             flex-grow: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 16px 0;
-            min-height: 0; /* flex内の子要素縮小のために必須 */
+            min-height: 0;
         }
 
-        /* グリッドレイアウト（実験リスト：高さを制限） */
+        /* グリッドレイアウト */
         .experiment-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
+            gap: 22px;
             width: 100%;
             height: 100%;
-            max-height: 540px; /* 事前登録ボタン追加に伴い、カードが潰れないように少し高さを最適化 */
+            max-height: 540px;
         }
 
         /* 実験カードのスタイリング */
         .card {
             background-color: var(--white);
             border-radius: var(--radius);
-            padding: 24px;
+            padding: 26px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             box-shadow: var(--shadow-md);
-            border: 1px solid rgba(30, 64, 175, 0.04);
+            border: 1px solid var(--border-glass);
             transition: var(--transition);
             position: relative;
-            min-height: 0; /* コンテンツ過多でのバグを防ぐ */
+            min-height: 0;
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            overflow: hidden;
+        }
+
+        /* カード表面を流れる光の反射エフェクト（シマー効果） */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -80%;
+            width: 40%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.52) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(25deg);
+            transition: all 0.7s ease;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .card:hover::before {
+            left: 140%;
+            opacity: 1;
+            transition: all 0.9s ease;
         }
 
         .card:hover {
-            transform: translateY(-6px);
+            transform: translateY(-8px) scale(1.02);
             box-shadow: var(--shadow-lg);
-            border-color: rgba(30, 64, 175, 0.15);
+            border-color: rgba(255, 255, 255, 0.9);
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* N-Backカード用の近未来デザイン（水とエコロジーミントの美しき融合） */
+        .card-nback {
+            border: 1.5px solid rgba(255, 255, 255, 0.85);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.55) 0%, rgba(224, 242, 254, 0.45) 100%);
+        }
+        
+        .card-nback::after {
+            content: 'N-BACK TASK';
+            position: absolute;
+            top: 14px;
+            right: 20px;
+            font-size: 0.65rem;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            color: #0284c7;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 2px 8px;
+            border-radius: 50px;
+            border: 1px solid rgba(2, 132, 199, 0.15);
+            letter-spacing: 0.08em;
         }
 
         /* カードヘッダー */
         .card-header {
             margin-bottom: 12px;
+            position: relative;
+            z-index: 2;
         }
 
         .card-tag {
-            font-size: 0.75rem;
+            font-size: 0.78rem;
             font-weight: 700;
+            font-family: 'Quicksand', sans-serif;
             text-transform: uppercase;
-            color: var(--primary-color);
-            letter-spacing: 0.05em;
+            color: #0369a1;
+            letter-spacing: 0.06em;
             margin-bottom: 4px;
-            display: block;
+            display: inline-flex;
+            align-items: center;
         }
 
         .card-title {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             font-weight: 700;
-            color: var(--text-main);
+            color: #0f2d59;
             line-height: 1.3;
+            text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
         }
 
         /* カードボディ */
@@ -186,45 +279,52 @@
             flex-direction: column;
             justify-content: space-between;
             min-height: 0;
-            overflow-y: auto; /* 万が一文章が長い場合のスクロール領域 */
+            overflow-y: auto;
+            position: relative;
+            z-index: 2;
         }
 
         .card-description {
             font-size: 0.85rem;
             color: var(--text-sub);
             margin-bottom: 12px;
-            line-height: 1.5;
+            line-height: 1.55;
+            text-shadow: 0 1px 1px rgba(255, 255, 255, 0.3);
         }
 
         .card-meta {
             display: inline-flex;
             align-items: center;
             font-size: 0.8rem;
-            color: var(--primary-color);
-            background-color: var(--primary-light);
-            padding: 4px 10px;
-            border-radius: 6px;
+            color: #0369a1;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(224, 242, 254, 0.8) 100%);
+            padding: 5px 12px;
+            border-radius: 50px;
             font-weight: 500;
             align-self: flex-start;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 2px 6px rgba(2, 132, 199, 0.05);
         }
 
         .card-meta svg {
-            width: 12px;
-            height: 12px;
-            margin-right: 4px;
-            fill: currentColor;
+            width: 13px;
+            height: 13px;
+            margin-right: 5px;
+            fill: #0284c7;
         }
 
-        /* アクションエリア全体の配置（縦方向に整列） */
+        /* アクションエリア全体の配置 */
         .card-action {
             display: flex;
             flex-direction: column;
             gap: 10px;
             flex-shrink: 0;
             width: 100%;
+            position: relative;
+            z-index: 2;
         }
 
-        /* 共通ボタン基本構造 */
+        /* 共通ボタン基本構造（3Dグロス＆水滴デザイン） */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -233,24 +333,31 @@
             padding: 11px 20px;
             color: var(--white);
             text-decoration: none;
-            border-radius: 12px;
-            font-weight: 500;
+            border-radius: 50px; /* 水滴のように完全に丸みのある形状 */
+            font-weight: 700;
             font-size: 0.95rem;
             transition: var(--transition);
-            border: none;
+            border: 1px solid rgba(255, 255, 255, 0.4);
             cursor: pointer;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.2), 
+                        inset 0 2.5px 3px rgba(255, 255, 255, 0.75),
+                        inset 0 -2.5px 3px rgba(0, 0, 0, 0.15); /* リアルな立体ツヤ効果 */
+            position: relative;
+            overflow: hidden;
         }
 
-        /* メインの「実験に参加する」ボタン */
+        /* メインの「実験に参加する」ボタン（美しいロイヤルスカイブルーの光沢） */
         .btn-primary {
-            background-color: var(--primary-color);
-            box-shadow: 0 4px 10px rgba(30, 64, 175, 0.15);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.1) 48%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.12) 100%), #0284c7;
+            color: var(--white);
         }
 
         .btn-primary:hover {
-            background-color: var(--accent-color);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.15) 48%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.15) 100%), var(--accent-color);
             color: var(--white);
-            box-shadow: 0 6px 14px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.35),
+                        inset 0 2.5px 3px rgba(255, 255, 255, 0.8),
+                        inset 0 -2.5px 3px rgba(0, 0, 0, 0.1);
         }
 
         .btn-primary svg {
@@ -258,36 +365,39 @@
             height: 16px;
             margin-left: 6px;
             transition: var(--transition);
+            fill: white;
         }
 
         .btn-primary:hover svg {
-            transform: translateX(3px);
+            transform: translateX(4px);
         }
 
-        /* 事前登録（プレレジ情報）エリアのデザイン */
+        /* 事前登録（プレレジ情報）エリア */
         .prereg-box {
             display: flex;
             flex-direction: column;
             gap: 8px;
             margin-top: 4px;
             padding-top: 12px;
-            border-top: 1px dashed rgba(30, 64, 175, 0.15);
+            border-top: 1px dashed rgba(2, 132, 199, 0.25);
         }
 
-        /* プレレジを確認するボタン（白抜きアウトライン） */
+        /* プレレジを確認するボタン（透明度の高いクリーンなホワイトガラスボタン） */
         .btn-outline {
-            background-color: var(--white);
-            color: var(--primary-color);
-            border: 1.5px solid var(--primary-color);
-            padding: 8px 16px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.42) 100%);
+            color: #0369a1;
+            border: 1px solid rgba(2, 132, 199, 0.45);
             font-size: 0.85rem;
-            box-shadow: none;
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.08),
+                        inset 0 1.5px 2px rgba(255, 255, 255, 0.9);
         }
 
         .btn-outline:hover {
-            background-color: var(--primary-light);
-            border-color: var(--primary-color);
-            color: var(--primary-color);
+            background: linear-gradient(180deg, var(--primary-light) 0%, rgba(255, 255, 255, 0.8) 100%);
+            color: #0284c7;
+            border-color: #0284c7;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.18),
+                        inset 0 1.5px 2px rgba(255, 255, 255, 0.9);
         }
 
         .btn-outline svg {
@@ -295,23 +405,25 @@
             height: 14px;
             margin-right: 6px;
             fill: none;
-            stroke: currentColor;
+            stroke: #0284c7;
             stroke-width: 2;
         }
 
-        /* 変更履歴（証拠）ボタン（控えめなテキストスタイル） */
+        /* 変更履歴（証拠）ボタン（クリーンなテキストリンク） */
         .btn-link {
             background-color: transparent;
-            color: var(--text-sub);
+            color: #0369a1;
             padding: 4px 12px;
             font-size: 0.78rem;
             text-decoration: underline;
-            border-radius: 6px;
+            border-radius: 50px;
+            box-shadow: none;
+            border: none;
         }
 
         .btn-link:hover {
-            color: var(--primary-color);
-            background-color: rgba(30, 64, 175, 0.04);
+            color: var(--accent-color);
+            background-color: rgba(255, 255, 255, 0.5);
             text-decoration: none;
         }
 
@@ -324,35 +436,42 @@
             stroke-width: 2;
         }
 
-        /* 実験0（記念用）は少し落ち着いたデザインボタンに */
+        /* 実験0（記念用）の特別ボタンデザイン */
         .card-zero .btn-primary {
-            background-color: var(--white);
-            color: var(--primary-color);
-            border: 2px solid var(--primary-light);
-            box-shadow: none;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.7) 100%);
+            color: #0369a1;
+            border: 1px solid rgba(2, 132, 199, 0.3);
+            box-shadow: 0 3px 10px rgba(2, 132, 199, 0.08);
         }
 
         .card-zero .btn-primary:hover {
-            background-color: var(--primary-light);
-            border-color: var(--primary-color);
-            color: var(--primary-color);
+            background: linear-gradient(180deg, var(--primary-light) 0%, rgba(255, 255, 255, 0.9) 100%);
+            border-color: #0284c7;
+            color: #0284c7;
+            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.15);
         }
 
         .card-zero .btn-primary svg {
-            fill: var(--primary-color);
+            fill: #0284c7;
         }
 
-        /* フッター（高さを抑える） */
+        /* フッター（グラス質感） */
         footer {
             text-align: center;
             padding: 12px 24px;
-            border-top: 1px solid rgba(15, 23, 42, 0.08);
+            border-top: 1px solid rgba(255, 255, 255, 0.4);
             font-size: 0.8rem;
-            color: var(--text-sub);
+            color: #0f3566;
             flex-shrink: 0;
+            background-color: rgba(255, 255, 255, 0.25);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-radius: var(--radius);
+            text-shadow: 0 1px 1px rgba(255, 255, 255, 0.4);
+            box-shadow: var(--shadow-sm);
         }
 
-        /* レスポンシブ調整（画面が極端に狭い、またはスマホ表示時のフォールバック） */
+        /* レスポンシブ調整 */
         @media (max-width: 860px) {
             html, body {
                 overflow-y: auto; /* モバイルでは自然にスクロールできるようにする */
@@ -393,7 +512,7 @@
             }
         }
 
-        /* 横幅は十分だが高さが低いディスプレイへの対応（ランドスケープモードなど） */
+        /* 横幅は十分だが高さが低いディスプレイへの対応 */
         @media (max-height: 640px) and (min-width: 861px) {
             html, body {
                 overflow-y: auto;
@@ -408,11 +527,13 @@
 </head>
 <body>
 
+    <!-- 背景のフルティガー・エアロ キャンバス（泡、クローバー、透明な魚、光芒） -->
+    <canvas id="frutiger-canvas"></canvas>
+
     <div class="container">
         <!-- ヘッダーエリア -->
         <header>
             <span class="univ-tag">尚絅学院大学</span>
-            <!-- 〇〇の部分にあなたの名前を入れてください -->
             <h1>心理学実験ポータルサイト</h1>
             <p class="greeting">
                 ご訪問ありがとうございます。以下の実験へのご協力をお願いいたします。<br>
@@ -449,16 +570,16 @@
                     </div>
                 </article>
 
-                <!-- 実験1: ストループ課題（本番用の実験に決定：GitHubプレレジリンク搭載） -->
-                <article class="card">
+                <!-- 実験1: N-Back課題（本番用の実験：脳科学・認知科学的デザイン） -->
+                <article class="card card-nback">
                     <div class="card-content">
                         <div class="card-header">
                             <span class="card-tag">Expt 1</span>
-                            <h2 class="card-title">ストループ課題</h2>
+                            <h2 class="card-title">N-Back課題</h2>
                         </div>
                         <div class="card-body">
                             <p class="card-description">
-                                「文字が表す意味」と「文字が表示されている色」が異なる場合に生じる反応の遅れ（干渉）を調べる、認知心理学の代表的なテストです。
+                                提示される刺激が「N個前」のものと一致しているかを瞬時に判断する、ワーキングメモリ（作業記憶）の容量を測定する学術テストです。
                             </p>
                             <span class="card-meta">
                                 <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
@@ -467,21 +588,21 @@
                         </div>
                     </div>
                     <div class="card-action">
-                        <!-- 実験開始ボタン（一番目立つプライマリ色、アイコンが右スライドするアニメーション） -->
-                        <a href="stroop.html" class="btn btn-primary">
+                        <!-- 実験開始ボタン（本番用URLへの直行リンク・確実に開くようにtarget="_blank"を追加） -->
+                        <a href="https://Takehi127.github.io/my-experiment/nback.html" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
                             実験1に参加する
                             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 13h11.86l-5.43 5.43 1.42 1.42L21.14 12l-8.29-8.29-1.42 1.42L16.86 11H5v2z"/></svg>
                         </a>
                         
-                        <!-- 事前登録関連リンク（点線の区切り線で自然にグルーピング） -->
+                        <!-- 事前登録関連リンク -->
                         <div class="prereg-box">
-                            <!-- 1. プレレジ本文へのリンク（GitHub Markdownへの白抜きアウトラインボタン） -->
+                            <!-- 1. プレレジ本文へのリンク -->
                             <a href="https://github.com/Takehi127/my-experiment/blob/main/preregistration.md" class="btn btn-outline" target="_blank" rel="noopener noreferrer">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                                 プレレジを確認する
                             </a>
                             
-                            <!-- 2. 変更履歴へのリンク（GitHub Commitsへの目立たないテキストリンク） -->
+                            <!-- 2. 変更履歴へのリンク -->
                             <a href="https://github.com/Takehi127/my-experiment/commits/main/preregistration.md" class="btn btn-link" target="_blank" rel="noopener noreferrer">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                                 変更履歴を確認する
@@ -524,5 +645,354 @@
         </footer>
     </div>
 
+    <script>
+        // ====================================================
+        // フルティガー・エアロ（Frutiger Aero）キャンバスエフェクト
+        // ====================================================
+        const canvas = document.getElementById('frutiger-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let bubbles = [];
+        let clovers = [];
+        let glassFishes = [];
+        let lightParticles = [];
+
+        // キャンバスのリサイズ
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initObjects();
+        }
+
+        // ----------------------------------------------------
+        // オブジェクトのクラス定義
+        // ----------------------------------------------------
+
+        // 1. 水滴/泡（Bubbles）クラス - 上に昇って弾ける
+        class Bubble {
+            constructor() {
+                this.reset();
+                this.y = Math.random() * canvas.height; // 初回は画面内にランダム配置
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + Math.random() * 50;
+                this.radius = Math.random() * 12 + 4;
+                this.speedY = -(Math.random() * 1.0 + 0.4);
+                this.wiggleSpeed = Math.random() * 0.02 + 0.01;
+                this.wiggleRange = Math.random() * 2 + 1;
+                this.wiggleStep = Math.random() * 100;
+                this.alpha = Math.random() * 0.4 + 0.2;
+            }
+
+            draw() {
+                ctx.save();
+                // リアルな水滴グラデーション
+                let grad = ctx.createRadialGradient(
+                    this.x - this.radius * 0.3,
+                    this.y - this.radius * 0.3,
+                    this.radius * 0.1,
+                    this.x,
+                    this.y,
+                    this.radius
+                );
+                grad.addColorStop(0, `rgba(255, 255, 255, ${this.alpha * 1.2})`);
+                grad.addColorStop(0.2, `rgba(255, 255, 255, ${this.alpha * 0.5})`);
+                grad.addColorStop(0.85, 'rgba(186, 230, 253, 0.05)');
+                grad.addColorStop(1, `rgba(255, 255, 255, ${this.alpha * 0.95})`);
+
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+
+            update() {
+                this.y += this.speedY;
+                this.wiggleStep += this.wiggleSpeed;
+                this.x += Math.sin(this.wiggleStep) * this.wiggleRange * 0.3;
+
+                // 画面外に出たらリセット
+                if (this.y < -this.radius) {
+                    this.reset();
+                }
+            }
+        }
+
+        // 2. 透明な四つ葉のクローバー（Clovers）クラス - 優雅に揺らぎながら漂う（爽やかなミントアクア）
+        class Clover {
+            constructor() {
+                this.reset();
+                this.y = Math.random() * canvas.height;
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = -50 - Math.random() * 100;
+                this.size = Math.random() * 12 + 10; // 葉のサイズ
+                this.speedY = Math.random() * 0.3 + 0.25;
+                this.speedX = (Math.random() - 0.5) * 0.4;
+                this.angle = Math.random() * Math.PI * 2;
+                this.rotSpeed = (Math.random() - 0.5) * 0.012;
+                this.alpha = Math.random() * 0.25 + 0.2;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+
+                // 四つ葉のクローバー（4枚のハート葉をミントアクアカラーで描画）
+                ctx.fillStyle = `rgba(45, 212, 191, ${this.alpha})`;
+                ctx.strokeStyle = `rgba(255, 255, 255, ${this.alpha * 1.8})`;
+                ctx.lineWidth = 1;
+
+                for (let r = 0; r < 4; r++) {
+                    ctx.rotate(Math.PI / 2);
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    // ベジェ曲線でハート型の葉を美しく描画
+                    ctx.bezierCurveTo(-this.size/2, -this.size, -this.size, -this.size/2, 0, -this.size);
+                    ctx.bezierCurveTo(this.size, -this.size/2, this.size/2, -this.size, 0, 0);
+                    ctx.fill();
+                    ctx.stroke();
+                }
+
+                // 茎を描画
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.quadraticCurveTo(this.size/2, this.size * 0.8, this.size/3, this.size * 1.3);
+                ctx.strokeStyle = `rgba(45, 212, 191, ${this.alpha * 1.2})`;
+                ctx.lineWidth = 1.2;
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX + Math.sin(this.y * 0.008) * 0.2;
+                this.angle += this.rotSpeed;
+
+                // 画面外に出たら上から再登場
+                if (this.y > canvas.height + 50) {
+                    this.reset();
+                }
+            }
+        }
+
+        // 3. ガラスの魚（Glass Fish）クラス - 滑らかにサイン波で泳ぐ（ミントブルー）
+        class GlassFish {
+            constructor() {
+                this.reset();
+                this.x = Math.random() * canvas.width; // 初回ランダム配置
+            }
+
+            reset() {
+                this.direction = Math.random() > 0.5 ? 1 : -1; // 1:右向き, -1:左向き
+                this.x = this.direction === 1 ? -120 : canvas.width + 120;
+                this.y = Math.random() * (canvas.height * 0.6) + (canvas.height * 0.2); // 画面中央部付近を泳ぐ
+                this.size = Math.random() * 10 + 12; // 魚の大きさ
+                this.speedX = (Math.random() * 0.6 + 0.4) * this.direction;
+                this.waveSpeed = Math.random() * 0.03 + 0.015;
+                this.waveRange = Math.random() * 1.2 + 0.6;
+                this.angle = Math.random() * 100;
+                this.alpha = Math.random() * 0.25 + 0.2;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                if (this.direction === -1) {
+                    ctx.scale(-1, 1); // 左向きなら反転
+                }
+
+                // ガラス魚の滑らかなフォルム描画
+                ctx.beginPath();
+                ctx.moveTo(this.size * 1.5, 0);
+                ctx.quadraticCurveTo(this.size * 0.5, -this.size * 0.7, -this.size * 1.2, -this.size * 0.1);
+                ctx.lineTo(-this.size * 1.8, -this.size * 0.6);
+                ctx.quadraticCurveTo(-this.size * 1.5, 0, -this.size * 1.8, this.size * 0.6);
+                ctx.lineTo(-this.size * 1.2, this.size * 0.1);
+                ctx.quadraticCurveTo(this.size * 0.5, this.size * 0.7, this.size * 1.5, 0);
+
+                // 内側の透明ミントブルーグラデーション
+                let bodyGrad = ctx.createLinearGradient(-this.size, 0, this.size, 0);
+                bodyGrad.addColorStop(0, `rgba(255, 255, 255, ${this.alpha * 0.4})`);
+                bodyGrad.addColorStop(0.5, `rgba(6, 182, 212, ${this.alpha * 0.65})`);
+                bodyGrad.addColorStop(1, `rgba(255, 255, 255, ${this.alpha * 0.95})`);
+
+                ctx.fillStyle = bodyGrad;
+                ctx.fill();
+
+                // ガラスのエッジ（白く光るライン）
+                ctx.strokeStyle = `rgba(255, 255, 255, ${this.alpha * 2.2})`;
+                ctx.lineWidth = 1.3;
+                ctx.stroke();
+
+                // 魚の骨格ライン
+                ctx.beginPath();
+                ctx.moveTo(-this.size * 1.0, 0);
+                ctx.lineTo(this.size * 0.8, 0);
+                for (let i = 0; i < 3; i++) {
+                    let rx = -this.size * 0.5 + i * (this.size * 0.4);
+                    ctx.moveTo(rx, -this.size * 0.25);
+                    ctx.lineTo(rx + this.size * 0.15, this.size * 0.25);
+                }
+                ctx.strokeStyle = `rgba(255, 255, 255, ${this.alpha * 1.2})`;
+                ctx.lineWidth = 0.8;
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.angle += this.waveSpeed;
+                this.y += Math.sin(this.angle) * this.waveRange;
+
+                if (this.direction === 1 && this.x > canvas.width + 150) {
+                    this.reset();
+                } else if (this.direction === -1 && this.x < -150) {
+                    this.reset();
+                }
+            }
+        }
+
+        // 4. レンズフレア/光の瞬き粒子 (Light Sparkles)
+        class LightSparkle {
+            constructor() {
+                this.reset();
+                this.y = Math.random() * canvas.height;
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * (canvas.height * 0.4); // 太陽に近い上半分に多く発生
+                this.size = Math.random() * 3 + 1.5;
+                this.life = Math.random() * 100 + 100;
+                this.maxLife = this.life;
+                this.alpha = Math.random() * 0.5 + 0.2;
+                this.speedY = -(Math.random() * 0.2 + 0.05);
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalCompositeOperation = 'screen';
+                
+                ctx.strokeStyle = `rgba(255, 255, 255, ${this.alpha * (this.life / this.maxLife)})`;
+                ctx.lineWidth = 1.2;
+                
+                ctx.beginPath();
+                ctx.moveTo(this.x - this.size * 3, this.y);
+                ctx.lineTo(this.x + this.size * 3, this.y);
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y - this.size * 3);
+                ctx.lineTo(this.x, this.y + this.size * 3);
+                ctx.stroke();
+
+                let radial = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
+                radial.addColorStop(0, 'rgba(255, 255, 255, 1)');
+                radial.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                ctx.fillStyle = radial;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.restore();
+            }
+
+            update() {
+                this.life--;
+                this.y += this.speedY;
+                if (this.life <= 0) {
+                    this.reset();
+                }
+            }
+        }
+
+        // ----------------------------------------------------
+        // シーンの構築とループ処理
+        // ----------------------------------------------------
+
+        function initObjects() {
+            bubbles = [];
+            clovers = [];
+            glassFishes = [];
+            lightParticles = [];
+
+            const bubbleCount = Math.floor((canvas.width * canvas.height) / 25000) + 12;
+            const cloverCount = Math.floor((canvas.width * canvas.height) / 80000) + 5;
+            const fishCount = 3; 
+            const sparkleCount = 15;
+
+            for (let i = 0; i < Math.min(bubbleCount, 40); i++) bubbles.push(new Bubble());
+            for (let i = 0; i < Math.min(cloverCount, 12); i++) clovers.push(new Clover());
+            for (let i = 0; i < fishCount; i++) glassFishes.push(new GlassFish());
+            for (let i = 0; i < sparkleCount; i++) lightParticles.push(new LightSparkle());
+        }
+
+        // 上空からのサンレイ（太陽光線）エフェクト
+        function drawSunRays() {
+            ctx.save();
+            ctx.globalCompositeOperation = 'screen';
+            
+            let sunGrad = ctx.createRadialGradient(
+                canvas.width * 0.1, 0, 0,
+                canvas.width * 0.1, 0, canvas.width * 0.65
+            );
+            sunGrad.addColorStop(0, 'rgba(255, 255, 255, 0.28)');
+            sunGrad.addColorStop(0.3, 'rgba(224, 242, 254, 0.14)');
+            sunGrad.addColorStop(0.7, 'rgba(34, 211, 238, 0.05)');
+            sunGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+            ctx.fillStyle = sunGrad;
+            ctx.beginPath();
+            ctx.arc(canvas.width * 0.1, 0, canvas.width * 0.65, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        // メイン描画ループ
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawSunRays();
+
+            lightParticles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            glassFishes.forEach(f => {
+                f.update();
+                f.draw();
+            });
+
+            bubbles.forEach(b => {
+                b.update();
+                b.draw();
+            });
+
+            clovers.forEach(c => {
+                c.update();
+                c.draw();
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        window.onload = function() {
+            resizeCanvas();
+            animate();
+        }
+    </script>
 </body>
 </html>
